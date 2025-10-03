@@ -1,16 +1,24 @@
+server:
+  port: 8080
+
 spring:
+  profiles:
+    active: local
+
   datasource:
     url: jdbc:mysql://localhost:3306/virtualpet?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: vp_user
     password: vp_pass
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update        # solo en desarrollo
+    open-in-view: false       # buena práctica en APIs
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-  profiles:
-    active: local
+        # format_sql: true     # (opcional) ver SQL bonito en logs
 
-server:
-  port: 8080
+jwt:
+  secret: ${JWT_SECRET}        # define JWT_SECRET como variable de entorno
+  expirationMinutes: 120

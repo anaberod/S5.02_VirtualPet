@@ -1,67 +1,91 @@
-package cat.itacademy.virtualpet.domain.user; // Paquete donde vive la entidad User (organiza el código por dominio)
+package cat.itacademy.virtualpet.domain.user; // Paquete del dominio "user"
 
-// -------------------- IMPORTS --------------------
-import jakarta.persistence.*;                 // Anotaciones JPA: @Entity, @Id, @Table, @Column, etc.
-import lombok.*;                              // Anotaciones Lombok para generar getters/setters/constructores/builder/toString
-import org.hibernate.annotations.CreationTimestamp; // Marca un campo fecha para autocompletarse en la inserción
+/* ========================= IMPORTS ========================= */
+import com.fasterxml.jackson.annotation.JsonIgnore;              // Evitar exponer passwordHash si alguna vez se serializa la entidad
+import jakarta.persistence.*;                                   // JPA: @Entity, @Id, @Table, @Column, etc.
+import lombok.*;                                                // Lombok: getters/setters, builder, etc.
+import org.hibernate.annotations.CreationTimestamp;            // Fecha de creación automática
 
-import java.time.Instant;                     // Tipo de fecha/hora en UTC
-import java.util.HashSet;                     // Implementación concreta para Set
-import java.util.Set;                         // Interfaz Set (conjunto sin duplicados)
+import java.time.Instant;                                       // Timestamps en UTC
+import java.util.HashSet;                                       // Implementación para Set
+import java.util.Set;                                           // Interfaz Set
 
-// -------------------- ENTIDAD JPA --------------------
-@Entity                                       // Indica que esta clase es una entidad JPA (se mapea a una tabla)
-@Table(                                        // Configura detalles de la tabla en BD
-        name = "users",                       // Nombre de la tabla (evitamos "user" por ser palabra reservada en algunos SGBD)
-        uniqueConstraints = {                 // Restricciones de unicidad a nivel BD (evitan duplicados reales)
-                @UniqueConstraint(
-                        name = "uk_users_username",
-                        columnNames = "username" // username debe ser único
-                ),
-                @UniqueConstraint(
-                        name = "uk_users_email",
-                        columnNames = "email"    // email debe ser único
-                )
+/* ========================= ENTIDAD ========================= */
+/**
+ * Entidad JPA que representa a un usuario de la aplicación.
+ * - Unicidad en username y email a nivel de BD.
+ * - Contraseña almacenada como hash (BCrypt).
+ * - Roles en tabla secundaria (user_roles) como colección de Strings.
+ */
+@Entity
+@Table(
+        name = "users", // Evitamos "user" por ser palabra reservada en algunos SGBD
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_users_username", columnNames = "username"),
+                @UniqueConstraint(name = "uk_users_email", columnNames = "email")
         }
 )
-@Getter @Setter                               // Lombok: genera getters y setters para todos los campos
-@NoArgsConstructor                             // Lombok: constructor vacío (requisito de JPA)
-@AllArgsConstructor                             // Lombok: constructor con todos los campos
-@Builder                                       // Lombok: patrón builder para crear instancias de forma fluida
-@ToString(exclude = "passwordHash")            // Lombok: toString sin mostrar el hash de la contraseña (no filtrar secretos)
-public class User {                            // Declaración de la entidad
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString(exclude = "passwordHash") // Nunca incluimos el hash en logs por seguridad
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // equals/hashCode solo con los campos anotados
+public class User {
 
-    @Id                                        // Clave primaria
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Generación auto-incremental (IDENTITY en MySQL)
-    private Long id;                            // Identificador único del usuario
+    /* ------------------- Identificador ------------------- */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT en MySQL/MariaDB
+    @EqualsAndHashCode.Include                          // Identidad por id
+    private Long id;
 
-    @Column(nullable = false, length = 50)      // Columna NOT NULL, longitud máxima 50
-    private String username;                    // Nombre de usuario (login)
+    /* ------------------- Datos de login ------------------- */
+    @Column(nullable = false, length = 50)              // NOT NULL, máx 50
+    private String username;                            // Debe ser único (constraint de la tabla)
 
-    @Column(nullable = false, length = 120)     // ⬅️ Email OBLIGATORIO (NOT NULL), longitud máxima 120
-    private String email;                       // Email del usuario (único por constraint de la tabla)
+    @Column(nullable = false, length = 120)             // NOT NULL, máx 120
+    private String email;                               // Debe ser único (constraint de la tabla)
 
-    @Column(name = "password_hash", nullable = false, length = 120) // Columna NOT NULL con nombre explícito
-    private String passwordHash;                // Hash de contraseña (BCrypt); nunca guardes texto plano
+    @JsonIgnore                                         // Por si alguien serializa la entidad: NO exponer hashes
+    @Column(name = "password_hash", nullable = false, length = 120)
+    // BCrypt genera ~60 chars; dejamos 120 por si se cambia de algoritmo en el futuro
+    private String passwordHash;
 
-    @ElementCollection(fetch = FetchType.EAGER) // Colección de valores simples (no otra entidad); se carga siempre con el usuario
+    /* ------------------- Roles ------------------- */
+    @ElementCollection(fetch = FetchType.EAGER)         // Cargamos los roles junto al usuario (simple y seguro para auth)
     @CollectionTable(
-            name = "user_roles",               // Tabla intermedia donde se guardan los roles
+            name = "user_roles",
             joinColumns = @JoinColumn(
                     name = "user_id",
-                    foreignKey = @ForeignKey(name = "fk_user_roles_user") // Nombre explícito para la FK
+                    foreignKey = @ForeignKey(name = "fk_user_roles_user")
             )
     )
-    @Column(name = "role", nullable = false, length = 32) // Columna con el nombre del rol
-    @Builder.Default                               // Si construyes con builder y no pones roles, será un Set vacío por defecto
-    private Set<String> roles = new HashSet<>();   // Conjunto de roles (p. ej. ROLE_USER, ROLE_ADMIN)
+    @Column(name = "role", nullable = false, length = 32) // Ej.: ROLE_USER, ROLE_ADMIN
+    @Builder.Default
+    private Set<String> roles = new HashSet<>();
 
-    @CreationTimestamp                             // Hibernate asigna automáticamente la fecha/hora al crear el registro
-    @Column(name = "created_at", nullable = false, updatable = false) // No se puede actualizar después de creado
-    private Instant createdAt;                     // Momento de creación en UTC
+    /* ------------------- Metadatos ------------------- */
+    @CreationTimestamp                                  // Se autocompleta al insertar
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 
-    public void addRole(String role) {             // Método de ayuda para añadir roles de forma segura
-        if (roles == null) roles = new HashSet<>();// Defensa ante posibles nulls (raro, pero seguro)
-        roles.add(role);                           // Inserta el rol (no se duplica porque Set evita duplicados)
+    /* ------------------- Ayudas de dominio ------------------- */
+
+    /** Añade un rol si no existía (no duplica al ser Set). */
+    public void addRole(String role) {
+        if (roles == null) roles = new HashSet<>();
+        roles.add(role);
+    }
+
+    /** Normaliza datos antes de insertar (defensa contra espacios y mayúsculas en email). */
+    @PrePersist
+    @PreUpdate
+    private void normalizeFields() {
+        if (username != null) {
+            username = username.trim();
+        }
+        if (email != null) {
+            email = email.trim().toLowerCase(); // emails en minúsculas para evitar “duplicados” lógicos
+        }
     }
 }

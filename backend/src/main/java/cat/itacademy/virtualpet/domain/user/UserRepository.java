@@ -1,27 +1,26 @@
-package cat.itacademy.virtualpet.domain.user; // Ubica el repositorio dentro del dominio "user"
+package cat.itacademy.virtualpet.domain.user; // Repositorio del dominio "user"
 
-/* ----------- IMPORTS ----------- */
-import org.springframework.data.jpa.repository.JpaRepository; // Interfaz base de Spring Data JPA que aporta CRUD, paginación y más
-import org.springframework.stereotype.Repository;             // Anotación para registrar este repositorio como bean en el contexto de Spring
-import java.util.Optional;                                  // Contenedor para valores que pueden o no estar presentes (evita null)
+import org.springframework.data.jpa.repository.JpaRepository; // CRUD, paginación, etc. generado por Spring Data
+import org.springframework.stereotype.Repository;             // Estereotipo (opcional en interfaces de Spring Data)
+import java.util.Optional;                                   // Contenedor seguro para valores ausentes/presentes
 
 /**
  * Repositorio de acceso a datos para la entidad User.
- *
- * - NO se implementa a mano: Spring Data JPA genera en runtime la implementación
- *   a partir de la firma de los métodos y del nombre de la entidad/campos.
- * - El segundo parámetro de JpaRepository es el tipo de la clave primaria (Long en User).
+ * Spring Data JPA genera la implementación automáticamente en runtime.
+ * Clave primaria de User = Long.
  */
-@Repository // Marca la interfaz para que Spring la detecte en el escaneo de componentes (estereotipo de persistencia)
-public interface UserRepository extends JpaRepository<User, Long> { // Hereda todos los métodos CRUD de JpaRepository<User, Long>
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    // Deriva automáticamente una consulta "SELECT u FROM User u WHERE u.username = :username"
-    // Devuelve Optional porque puede no existir ningún usuario con ese username.
+    // Buscar por username (útil para validación de registro / pantallas admin)
     Optional<User> findByUsername(String username);
 
-    // Devuelve true si existe alguna fila en "users" con ese username (consulta optimizada de existencia).
+    // NUEVO: Buscar por email (login será solo por email)
+    Optional<User> findByEmail(String email);
+
+    // ¿Existe ya este username? (para devolver 409 en registro)
     boolean existsByUsername(String username);
 
-    // Devuelve true si existe alguna fila en "users" con ese email (recuerda que en tu modelo es NOT NULL y único).
+    // ¿Existe ya este email? (para devolver 409 en registro)
     boolean existsByEmail(String email);
 }
