@@ -10,6 +10,14 @@ spring:
     username: vp_user
     password: vp_pass
 
+  server:
+    error:
+      include-message: always
+      include-binding-errors: always
+      include-stacktrace: never
+
+
+
   jpa:
     hibernate:
       ddl-auto: update        # solo en desarrollo

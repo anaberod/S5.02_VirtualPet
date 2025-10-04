@@ -20,7 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;            
 import java.util.List;
 
 // 👉 Tu filtro JWT (Paso 6)
-import cat.itacademy.virtualpet.security.jwt.JwtAuthenticationFilter;
+import cat.itacademy.virtualpet.infrastructure.security.JwtAuthenticationFilter;
 
 /**
  * Configuración de seguridad de la API.
