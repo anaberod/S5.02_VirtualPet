@@ -10,6 +10,8 @@ import cat.itacademy.virtualpet.domain.user.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -27,6 +29,21 @@ public class PetServiceImpl implements PetService {
         this.petRepository = petRepository;
         this.userRepository = userRepository;
         this.petMapper = petMapper;
+    }
+
+    @Override
+    public Page<PetResponse> adminListPets(Long ownerId, Pageable pageable, String adminEmail) {
+        User admin = getCurrentUser(adminEmail);
+        if (!isAdmin(admin)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin only");
+        }
+
+        Page<Pet> page = (ownerId != null)
+                ? petRepository.findAllByOwnerId(ownerId, pageable)
+                : petRepository.findAll(pageable);
+
+        // Page<T> tiene .map(...)
+        return page.map(petMapper::toResponse);
     }
 
     // ================= CRUD =================
