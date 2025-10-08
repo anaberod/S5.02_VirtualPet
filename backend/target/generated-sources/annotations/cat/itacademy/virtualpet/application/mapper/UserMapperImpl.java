@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-10-04T20:32:22+0200",
+    date = "2025-10-07T13:06:52+0200",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -32,6 +32,7 @@ public class UserMapperImpl implements UserMapper {
         if ( set != null ) {
             userResponse.setRoles( new LinkedHashSet<String>( set ) );
         }
+        userResponse.setCreatedAt( user.getCreatedAt() );
 
         return userResponse;
     }
