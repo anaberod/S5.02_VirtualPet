@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -20,9 +21,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Lee Authorization: Bearer <token>, lo valida con JwtService y
- * si es válido establece la Authentication en el SecurityContext.
- * Se ignoran: /auth/** y preflight OPTIONS.
+ * Filtro JWT:
+ * - Ignora preflight y rutas públicas mediante shouldNotFilter.
+ * - Valida token, carga usuario y establece Authentication si todo es correcto.
+ * - Si el usuario no existe o el token no es válido, no autentica (Security devolverá 401/403).
  */
 @Component
 @RequiredArgsConstructor
@@ -31,57 +33,82 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
+    private static final AntPathMatcher PM = new AntPathMatcher();
+
+    // Rutas públicas (ajústalas si necesitas más)
+    private static final String[] PUBLIC_PATTERNS = new String[] {
+            "/auth/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/actuator/health"
+    };
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true; // preflight CORS
+        for (String pattern : PUBLIC_PATTERNS) {
+            if (PM.match(pattern, uri)) return true;
+        }
+        return false;
+    }
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        // Ignorar preflight y rutas públicas de auth
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod()) ||
-                request.getRequestURI().startsWith("/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // Extraer cabecera Authorization
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return; // No hay token → que siga la cadena (acabará en 401 por Security)
-        }
-
-        String token = authHeader.substring(7);
-
-        // Si ya hay autenticación, no rehacerla
+        // Si ya hay autenticación, continúa
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        try {
-            // En tu JwtService, el subject es el EMAIL
-            String email = jwtService.extractEmail(token);
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-            User user = userRepository.findByEmail(email)
-                    .orElse(null);
-            if (user == null || !jwtService.isTokenValid(token, user)) {
-                filterChain.doFilter(request, response); // token inválido → acabará 401
+        final String token = authHeader.substring(7);
+
+        try {
+            // 1) Extraer email (valida firma/exp. internamente; si falla, lanza excepción)
+            String email = jwtService.extractEmail(token);
+            if (email == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            email = email.trim().toLowerCase();
+
+            // 2) Cargar usuario
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user == null) {
+                // Usuario borrado o inexistente → no autenticar
+                filterChain.doFilter(request, response);
                 return;
             }
 
-            // Mapear roles del usuario a authorities de Spring
+            // 3) Validar token contra el usuario
+            if (!jwtService.isTokenValid(token, user)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // 4) Construir Authorities con prefijo ROLE_
             Set<SimpleGrantedAuthority> authorities = user.getRoles().stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());
 
-            // Crear Authentication e introducirla en el contexto
+            // 5) Establecer Authentication (principal = email)
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(email, null, authorities);
+
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-        } catch (Exception ex) {
-            // Cualquier problema con el token → continuar (Security dará 401)
+        } catch (Exception ignored) {
+            // Cualquier fallo → no autenticar; Security decidirá (401/403)
         }
 
         filterChain.doFilter(request, response);

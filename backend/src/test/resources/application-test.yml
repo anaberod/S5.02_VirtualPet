@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  main:
+    allow-bean-definition-overriding: true
+
+jwt:
+  # 32 bytes en Base64 (256 bits). Válida para HS256.
+  secret: MDEyMzQ1Njc4OUFCQ0RFRjAxMjM0NTY3ODlBQkNERUYwMTIzNDU2Nzg5QUJDREVG
+  issuer: virtualpet-test
+  expirationMinutes: 120
