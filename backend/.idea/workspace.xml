@@ -5,12 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="660d5f19-cb0a-4c8a-9325-5534ae8d0e33" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/error/EmailAlreadyRegisteredException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/error/IncorrectPasswordException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/error/InvalidEmailException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/error/UsernameAlreadyTakenException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/error/PetDeceasedException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/auth/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/auth/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/dto/pet/PetActionResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/dto/pet/PetActionResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/dto/pet/PetResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/dto/pet/PetResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/mapper/PetMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/mapper/PetMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/domain/pet/Pet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/domain/pet/Pet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/error/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/error/GlobalExceptionHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

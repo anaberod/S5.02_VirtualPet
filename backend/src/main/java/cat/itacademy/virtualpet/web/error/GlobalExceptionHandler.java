@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,14 @@ public class GlobalExceptionHandler {
                                                              HttpServletRequest req) {
         return build(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
     }
+
+    @ExceptionHandler(PetDeceasedException.class)
+    public ResponseEntity<Map<String, Object>> petDeceased(PetDeceasedException ex,
+                                                           HttpServletRequest req) {
+        // 410 Gone porque el recurso (mascota viva) ya no está disponible
+        return build(HttpStatus.GONE, ex.getMessage(), req.getRequestURI());
+    }
+
 
 
     // --- 500: Fallback genérico ---

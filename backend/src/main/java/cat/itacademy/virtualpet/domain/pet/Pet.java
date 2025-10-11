@@ -43,89 +43,53 @@ public class Pet {
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
+    // 🆕 Estado de vida/muerte
+    @Column(nullable = false)
+    private boolean dead = false;
+
+    @Column(name = "death_at")
+    private Instant deathAt;
+
     // Many pets belong to one user
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    // Getters and setters
-    public Long getId() {
-        return id;
-    }
+    // ---------- Getters & Setters ----------
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public Breed getBreed() { return breed; }
+    public void setBreed(Breed breed) { this.breed = breed; }
 
-    public Breed getBreed() {
-        return breed;
-    }
+    public LifeStage getLifeStage() { return lifeStage; }
+    public void setLifeStage(LifeStage lifeStage) { this.lifeStage = lifeStage; }
 
-    public void setBreed(Breed breed) {
-        this.breed = breed;
-    }
+    public int getHunger() { return hunger; }
+    public void setHunger(int hunger) { this.hunger = hunger; }
 
-    public LifeStage getLifeStage() {
-        return lifeStage;
-    }
+    public int getHygiene() { return hygiene; }
+    public void setHygiene(int hygiene) { this.hygiene = hygiene; }
 
-    public void setLifeStage(LifeStage lifeStage) {
-        this.lifeStage = lifeStage;
-    }
+    public int getFun() { return fun; }
+    public void setFun(int fun) { this.fun = fun; }
 
-    public int getHunger() {
-        return hunger;
-    }
+    public int getActionCount() { return actionCount; }
+    public void setActionCount(int actionCount) { this.actionCount = actionCount; }
 
-    public void setHunger(int hunger) {
-        this.hunger = hunger;
-    }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
-    public int getHygiene() {
-        return hygiene;
-    }
+    public boolean isDead() { return dead; }
+    public void setDead(boolean dead) { this.dead = dead; }
 
-    public void setHygiene(int hygiene) {
-        this.hygiene = hygiene;
-    }
+    public Instant getDeathAt() { return deathAt; }
+    public void setDeathAt(Instant deathAt) { this.deathAt = deathAt; }
 
-    public int getFun() {
-        return fun;
-    }
-
-    public void setFun(int fun) {
-        this.fun = fun;
-    }
-
-    public int getActionCount() {
-        return actionCount;
-    }
-
-    public void setActionCount(int actionCount) {
-        this.actionCount = actionCount;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
+    public User getOwner() { return owner; }
+    public void setOwner(User owner) { this.owner = owner; }
 }

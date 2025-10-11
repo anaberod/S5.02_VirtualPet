@@ -23,84 +23,45 @@ public class PetResponse {
     private Long ownerId;
     private Instant createdAt;
 
-    // Getters and setters
-    public Long getId() {
-        return id;
-    }
+    // 🆕 Estado de vida/muerte
+    private boolean dead;
+    private Instant deathAt;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // ---------- Getters & Setters ----------
 
-    public String getName() {
-        return name;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public Breed getBreed() {
-        return breed;
-    }
+    public Breed getBreed() { return breed; }
+    public void setBreed(Breed breed) { this.breed = breed; }
 
-    public void setBreed(Breed breed) {
-        this.breed = breed;
-    }
+    public LifeStage getLifeStage() { return lifeStage; }
+    public void setLifeStage(LifeStage lifeStage) { this.lifeStage = lifeStage; }
 
-    public LifeStage getLifeStage() {
-        return lifeStage;
-    }
+    public int getHunger() { return hunger; }
+    public void setHunger(int hunger) { this.hunger = hunger; }
 
-    public void setLifeStage(LifeStage lifeStage) {
-        this.lifeStage = lifeStage;
-    }
+    public int getHygiene() { return hygiene; }
+    public void setHygiene(int hygiene) { this.hygiene = hygiene; }
 
-    public int getHunger() {
-        return hunger;
-    }
+    public int getFun() { return fun; }
+    public void setFun(int fun) { this.fun = fun; }
 
-    public void setHunger(int hunger) {
-        this.hunger = hunger;
-    }
+    public int getActionCount() { return actionCount; }
+    public void setActionCount(int actionCount) { this.actionCount = actionCount; }
 
-    public int getHygiene() {
-        return hygiene;
-    }
+    public Long getOwnerId() { return ownerId; }
+    public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
 
-    public void setHygiene(int hygiene) {
-        this.hygiene = hygiene;
-    }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
-    public int getFun() {
-        return fun;
-    }
+    public boolean isDead() { return dead; }
+    public void setDead(boolean dead) { this.dead = dead; }
 
-    public void setFun(int fun) {
-        this.fun = fun;
-    }
-
-    public int getActionCount() {
-        return actionCount;
-    }
-
-    public void setActionCount(int actionCount) {
-        this.actionCount = actionCount;
-    }
-
-    public Long getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
+    public Instant getDeathAt() { return deathAt; }
+    public void setDeathAt(Instant deathAt) { this.deathAt = deathAt; }
 }
