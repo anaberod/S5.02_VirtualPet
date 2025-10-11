@@ -5,88 +5,87 @@ import cat.itacademy.virtualpet.application.dto.auth.LoginRequest;
 import cat.itacademy.virtualpet.application.dto.auth.RegisterRequest;
 import cat.itacademy.virtualpet.domain.user.User;
 import cat.itacademy.virtualpet.domain.user.UserRepository;
-import cat.itacademy.virtualpet.infrastructure.security.JwtService; // <-- Lo crearemos en el Paso 4
+import cat.itacademy.virtualpet.infrastructure.security.JwtService;
+import cat.itacademy.virtualpet.web.error.EmailAlreadyRegisteredException;
+import cat.itacademy.virtualpet.web.error.UsernameAlreadyTakenException;
+import cat.itacademy.virtualpet.web.error.InvalidEmailException;
+import cat.itacademy.virtualpet.web.error.IncorrectPasswordException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Set;
 
-/**
- * Servicio de autenticación:
- * - register: crea usuario (email único), hashea password y devuelve JWT.
- * - login: valida credenciales (email + password) y devuelve JWT.
- */
 @Service
-@RequiredArgsConstructor // inyección por constructor de los final
+@RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;   // Acceso a BD de usuarios
-    private final PasswordEncoder passwordEncoder; // BCrypt (bean declarado en SecurityConfig)
-    private final JwtService jwtService;           // Firmado/validación de JWT (Paso 4)
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     /**
-     * Registro de usuario:
-     * - Normaliza email (trim + lower).
-     * - Verifica duplicados (email/username) -> 409.
-     * - Guarda hash BCrypt, asigna ROLE_USER.
-     * - Devuelve token JWT.
+     * Registro:
+     * - normaliza email/username
+     * - valida duplicados → 409 (excepciones propias)
+     * - guarda BCrypt y ROLE_USER
+     * - devuelve JWT en AuthResponse
      */
     public AuthResponse register(RegisterRequest in) {
-        // Normalizar entradas
-        final String username = in.getUsername().trim();
-        final String email = in.getEmail().trim().toLowerCase();
+        final String username = sanitize(in.getUsername());
+        final String email = sanitizeEmail(in.getEmail());
 
-        // Duplicados -> 409 Conflict
         if (userRepository.existsByEmail(email)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "email ya está en uso");
+            throw new EmailAlreadyRegisteredException(email);
         }
         if (userRepository.existsByUsername(username)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "username ya está en uso");
+            throw new UsernameAlreadyTakenException(username);
         }
 
-        // Hash de contraseña
         final String hash = passwordEncoder.encode(in.getPassword());
 
-        // Construir entidad
         User user = User.builder()
                 .username(username)
                 .email(email)
                 .passwordHash(hash)
-                .roles(Set.of("ROLE_USER")) // rol por defecto
+                .roles(Set.of("ROLE_USER"))
                 .build();
 
-        // Guardar en BD
-        user = userRepository.save(user);
+        userRepository.save(user);
 
-        // Emitir JWT
         String token = jwtService.generateToken(user);
-        return AuthResponse.builder().token(token).build();
+        return AuthResponse.builder()
+                .token(token)
+                .build();
     }
 
     /**
-     * Login por EMAIL (únicamente):
-     * - Normaliza email.
-     * - Busca por email -> si no existe, 401.
-     * - Verifica password -> si no coincide, 401.
-     * - Devuelve JWT.
+     * Login por email:
+     * - email inexistente → InvalidEmailException (401)
+     * - password incorrecta → IncorrectPasswordException (401)
+     * - OK → devuelve JWT
      */
     public AuthResponse login(LoginRequest in) {
-        final String email = in.getEmail().trim().toLowerCase();
+        final String email = sanitizeEmail(in.getEmail());
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED, "credenciales inválidas"));
+                .orElseThrow(InvalidEmailException::new);
 
-        boolean ok = passwordEncoder.matches(in.getPassword(), user.getPasswordHash());
-        if (!ok) {
-            // Mensaje genérico por seguridad (no revelar si el email existe)
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "credenciales inválidas");
+        if (!passwordEncoder.matches(in.getPassword(), user.getPasswordHash())) {
+            throw new IncorrectPasswordException();
         }
 
         String token = jwtService.generateToken(user);
-        return AuthResponse.builder().token(token).build();
+        return AuthResponse.builder()
+                .token(token)
+                .build();
+    }
+
+    // -------- helpers --------
+    private String sanitizeEmail(String raw) {
+        return raw == null ? null : raw.trim().toLowerCase();
+    }
+    private String sanitize(String raw) {
+        return raw == null ? null : raw.trim().replaceAll("\\s+", " ");
     }
 }

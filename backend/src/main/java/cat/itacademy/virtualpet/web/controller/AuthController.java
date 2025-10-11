@@ -12,14 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Controlador HTTP de autenticación.
- * Expone:
+ * Rutas públicas (permitidas en SecurityConfig):
  *  - POST /auth/register : registra usuario y devuelve JWT.
  *  - POST /auth/login    : login SOLO por email + password, devuelve JWT.
  *
- * Notas:
- *  - La validación (@Valid) usa las anotaciones de los DTOs.
- *  - Los errores (409, 401, 400/422) los lanza el AuthService como ResponseStatusException.
- *  - /auth/** ya está permitido en tu SecurityConfig.
+ * Los errores (401/409/400) se lanzan como excepciones propias y
+ * se formatean en GlobalExceptionHandler.
  */
 @RestController
 @RequestMapping("/auth")
@@ -28,25 +26,21 @@ public class AuthController {
 
     private final AuthService authService;
 
-    /**
-     * Registro de usuario.
-     * Body: { username, email, password }
-     * Respuesta: { token } (JWT)
-     * Status: 201 CREATED
-     */
-    @PostMapping("/register")
+    @PostMapping(
+            value = "/register",
+            consumes = "application/json",
+            produces = "application/json"
+    )
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest body) {
         AuthResponse resp = authService.register(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
-    /**
-     * Login SOLO por email.
-     * Body: { email, password }
-     * Respuesta: { token } (JWT)
-     * Status: 200 OK
-     */
-    @PostMapping("/login")
+    @PostMapping(
+            value = "/login",
+            consumes = "application/json",
+            produces = "application/json"
+    )
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest body) {
         AuthResponse resp = authService.login(body);
         return ResponseEntity.ok(resp);
