@@ -16,12 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * PetServiceImpl with "difficult" balance and warnings.
- */
 @Service
 public class PetServiceImpl implements PetService {
 
@@ -35,7 +31,8 @@ public class PetServiceImpl implements PetService {
         this.petMapper = petMapper;
     }
 
-    // ========== ADMIN / CRUD (unchanged) ==========
+    // ========== ADMIN ==========
+
     @Override
     public Page<PetResponse> adminListPets(Long ownerId, Pageable pageable, String adminEmail) {
         User admin = getCurrentUser(adminEmail);
@@ -48,11 +45,15 @@ public class PetServiceImpl implements PetService {
         return page.map(petMapper::toResponse);
     }
 
+    // ========== CRUD ==========
+
     @Override
     public PetResponse createPet(PetCreateRequest request, String userEmail) {
         User owner = getCurrentUser(userEmail);
+
         Pet pet = petMapper.toEntity(request);
         pet.setOwner(owner);
+
         pet.setLifeStage(LifeStage.BABY);
         pet.setHunger(50);
         pet.setHygiene(70);
@@ -60,6 +61,7 @@ public class PetServiceImpl implements PetService {
         pet.setActionCount(0);
         pet.setDead(false);
         pet.setDeathAt(null);
+
         Pet saved = petRepository.save(pet);
         return petMapper.toResponse(saved);
     }
@@ -68,9 +70,7 @@ public class PetServiceImpl implements PetService {
     public List<PetResponse> getAllPets(String userEmail) {
         User user = getCurrentUser(userEmail);
         boolean isAdmin = isAdmin(user);
-        List<Pet> pets = isAdmin
-                ? petRepository.findAll()
-                : petRepository.findAllByOwnerId(user.getId());
+        List<Pet> pets = isAdmin ? petRepository.findAll() : petRepository.findAllByOwnerId(user.getId());
         return pets.stream().map(petMapper::toResponse).toList();
     }
 
@@ -94,7 +94,7 @@ public class PetServiceImpl implements PetService {
         petRepository.delete(pet);
     }
 
-    // ========== ACTIONS (with difficult preset) ==========
+    // ========== ACTIONS (reverted balance) ==========
 
     @Transactional
     @Override
@@ -102,19 +102,17 @@ public class PetServiceImpl implements PetService {
         Pet pet = findPetByIdAndCheckAccess(id, userEmail);
         checkIfDead(pet);
 
-        if (pet.getHunger() == 0) {
-            throw new PetNotHungryException();
-        }
+        if (pet.getHunger() == 0) throw new PetNotHungryException();
 
-        // Difficult preset: feed is less potent
-        pet.setHunger(Math.max(0, pet.getHunger() - 30)); // -30
-        pet.setHygiene(Math.max(0, pet.getHygiene() - 8)); // -8
-        pet.setFun(Math.max(0, pet.getFun() - 20));       // -20
+        // Reverted effects
+        pet.setHunger(Math.max(0, pet.getHunger() - 70));
+        pet.setHygiene(Math.max(0, pet.getHygiene() - 5));
+        pet.setFun(Math.max(0, pet.getFun() - 10));
 
         incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
-        return buildResponseWithWarnings(saved);
+        return toActionResponseWithMessage(saved);
     }
 
     @Transactional
@@ -123,19 +121,17 @@ public class PetServiceImpl implements PetService {
         Pet pet = findPetByIdAndCheckAccess(id, userEmail);
         checkIfDead(pet);
 
-        if (pet.getHygiene() == 100) {
-            throw new PetAlreadyCleanException();
-        }
+        if (pet.getHygiene() == 100) throw new PetAlreadyCleanException();
 
-        // Difficult preset: wash gives less hygiene and costs more hunger/fun
-        pet.setHygiene(Math.min(100, pet.getHygiene() + 18)); // +18
-        pet.setHunger(Math.min(100, pet.getHunger() + 18));  // +18
-        pet.setFun(Math.max(0, pet.getFun() - 25));          // -25
+        // Reverted effects
+        pet.setHygiene(Math.min(100, pet.getHygiene() + 30));
+        pet.setHunger(Math.min(100, pet.getHunger() + 10));
+        pet.setFun(Math.max(0, pet.getFun() - 20));
 
         incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
-        return buildResponseWithWarnings(saved);
+        return toActionResponseWithMessage(saved);
     }
 
     @Transactional
@@ -144,19 +140,17 @@ public class PetServiceImpl implements PetService {
         Pet pet = findPetByIdAndCheckAccess(id, userEmail);
         checkIfDead(pet);
 
-        if (pet.getFun() == 100) {
-            throw new PetTooHappyException();
-        }
+        if (pet.getFun() == 100) throw new PetTooHappyException();
 
-        // Difficult preset: play gives moderate fun but costs more hunger and some hygiene
-        pet.setFun(Math.min(100, pet.getFun() + 28));         // +28
-        pet.setHunger(Math.min(100, pet.getHunger() + 22));   // +22
-        pet.setHygiene(Math.max(0, pet.getHygiene() - 8));    // -8
+        // Reverted effects
+        pet.setFun(Math.min(100, pet.getFun() + 40));
+        pet.setHunger(Math.min(100, pet.getHunger() + 15));
+        // hygiene unchanged
 
         incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
-        return buildResponseWithWarnings(saved);
+        return toActionResponseWithMessage(saved);
     }
 
     // ========== HELPERS ==========
@@ -174,7 +168,6 @@ public class PetServiceImpl implements PetService {
         User user = getCurrentUser(userEmail);
         Pet pet = petRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet not found"));
-
         if (!isAdmin(user) && !pet.getOwner().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: not your pet");
         }
@@ -187,25 +180,14 @@ public class PetServiceImpl implements PetService {
         }
     }
 
-    /**
-     * incrementAndEvaluateDeaths:
-     * - Apply per-action passive tick (difficult): hunger +15, hygiene -12, fun -12
-     * - Update actionCount and stage
-     * - Evaluate death by stats or senior rule
-     */
+    /** No passive tick here. Just count, update stage, then evaluate deaths. */
     private void incrementAndEvaluateDeaths(Pet pet) {
-        // Passive tick per action (difficult)
-        pet.setHunger(Math.min(100, pet.getHunger() + 15));
-        pet.setHygiene(Math.max(0, pet.getHygiene() - 12));
-        pet.setFun(Math.max(0, pet.getFun() - 12));
-
-        // Count action and update stage (unless passed)
         pet.setActionCount(pet.getActionCount() + 1);
         if (!pet.isDead() && pet.getLifeStage() != LifeStage.PASSED) {
             updateLifeStage(pet);
         }
 
-        // Death conditions (same as before)
+        // Death by stats
         if (pet.getHunger() == 100 || (pet.getHygiene() == 0 && pet.getFun() == 0)) {
             pet.setDead(true);
             pet.setLifeStage(LifeStage.PASSED);
@@ -213,6 +195,7 @@ public class PetServiceImpl implements PetService {
             return;
         }
 
+        // Natural death by senior
         if (pet.getLifeStage() == LifeStage.SENIOR && pet.getActionCount() >= 15) {
             pet.setDead(true);
             pet.setLifeStage(LifeStage.PASSED);
@@ -228,30 +211,11 @@ public class PetServiceImpl implements PetService {
         else pet.setLifeStage(LifeStage.SENIOR);
     }
 
-    /**
-     * Build PetActionResponse, set message if dead and populate warnings list.
-     * Warning thresholds (difficult tuning):
-     *  - hunger >= 75 -> "hunger_high"
-     *  - hygiene <= 25 -> "hygiene_low"
-     *  - fun <= 25 -> "fun_low"
-     */
-    private PetActionResponse buildResponseWithWarnings(Pet saved) {
+    private PetActionResponse toActionResponseWithMessage(Pet saved) {
         PetActionResponse resp = petMapper.toActionResponse(saved);
-
-        // message on death
         if (saved.isDead() || saved.getLifeStage() == LifeStage.PASSED) {
             resp.setMessage("Your pet has passed away 💔");
         }
-
-        // build warnings
-        List<String> warnings = new ArrayList<>();
-        if (!saved.isDead()) {
-            if (saved.getHunger() >= 75) warnings.add("hunger_high");
-            if (saved.getHygiene() <= 25) warnings.add("hygiene_low");
-            if (saved.getFun() <= 25) warnings.add("fun_low");
-        }
-        resp.setWarnings(warnings.isEmpty() ? null : warnings);
-
         return resp;
     }
 }

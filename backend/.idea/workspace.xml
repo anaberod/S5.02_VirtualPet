@@ -6,12 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="660d5f19-cb0a-4c8a-9325-5534ae8d0e33" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../BEZIP1.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/dto/pet/PetActionResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/dto/pet/PetActionResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/dto/pet/PetActionResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/dto/pet/PetActionResponse.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/domain/pet/enums/LifeStage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/domain/pet/enums/LifeStage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/error/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/error/GlobalExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/cat/itacademy/virtualpet/application/mapper/PetMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/cat/itacademy/virtualpet/application/mapper/PetMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/cat/itacademy/virtualpet/application/mapper/UserMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/cat/itacademy/virtualpet/application/mapper/UserMapperImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/app/pets/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/pets/[id]/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/components/pet-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/components/pet-card.tsx" afterDir="false" />
