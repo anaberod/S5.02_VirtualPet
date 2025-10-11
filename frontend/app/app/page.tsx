@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Dog, Users } from "lucide-react"
 import { AuthGuard } from "@/components/auth-guard"
@@ -42,6 +42,15 @@ function AppDashboard() {
       console.log("[v0] AppDashboard: Waiting for auth hydration...")
     }
   }, [_hasHydrated, token, isAdmin, fetchPets, fetchUsers])
+
+  const sortedPets = useMemo(() => {
+    return [...pets].sort((a, b) => {
+      // Dead pets go to the end
+      if (a.dead && !b.dead) return 1
+      if (!a.dead && b.dead) return -1
+      return 0
+    })
+  }, [pets])
 
   if (isAdmin) {
     return (
@@ -104,7 +113,7 @@ function AppDashboard() {
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {pets.map((pet) => (
+            {sortedPets.map((pet) => (
               <PetCard key={pet.id} pet={pet} onViewDetails={(id) => router.push(`/pets/${id}`)} />
             ))}
           </div>

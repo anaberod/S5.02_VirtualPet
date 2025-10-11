@@ -1,4 +1,4 @@
-export type LifeStage = "BABY" | "ADULT" | "SENIOR"
+export type LifeStage = "BABY" | "ADULT" | "SENIOR" | "PASSED"
 export type Breed = "DALMATIAN" | "GOLDEN_RETRIEVER" | "LABRADOR"
 
 export interface PetResponse {
@@ -12,6 +12,8 @@ export interface PetResponse {
   lifeStage: LifeStage
   createdAt: string
   updatedAt: string
+  dead: boolean
+  deathAt: string | null
 }
 
 export interface CreatePetRequest {
