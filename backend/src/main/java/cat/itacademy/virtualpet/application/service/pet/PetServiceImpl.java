@@ -16,18 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of PetService with business rules:
- * - Stats clamping (0–100)
- * - LifeStage evolution (BABY → ADULT → SENIOR)
- * - Death rules:
- *     - Hunger == 100 → instant death
- *     - Hygiene == 0 AND Fun == 0 → instant death
- *     - 5 actions in SENIOR (≥15 total) → natural death
- * - When dead → LifeStage becomes PASSED
- * - Hard caps (409): prevent actions if stat already at limit
+ * PetServiceImpl with "difficult" balance and warnings.
  */
 @Service
 public class PetServiceImpl implements PetService {
@@ -42,32 +35,24 @@ public class PetServiceImpl implements PetService {
         this.petMapper = petMapper;
     }
 
-    // ========== ADMIN ==========
-
+    // ========== ADMIN / CRUD (unchanged) ==========
     @Override
     public Page<PetResponse> adminListPets(Long ownerId, Pageable pageable, String adminEmail) {
         User admin = getCurrentUser(adminEmail);
         if (!isAdmin(admin)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin only");
         }
-
         Page<Pet> page = (ownerId != null)
                 ? petRepository.findAllByOwnerId(ownerId, pageable)
                 : petRepository.findAll(pageable);
-
         return page.map(petMapper::toResponse);
     }
-
-    // ========== CRUD ==========
 
     @Override
     public PetResponse createPet(PetCreateRequest request, String userEmail) {
         User owner = getCurrentUser(userEmail);
-
         Pet pet = petMapper.toEntity(request);
         pet.setOwner(owner);
-
-        // Initial values
         pet.setLifeStage(LifeStage.BABY);
         pet.setHunger(50);
         pet.setHygiene(70);
@@ -75,7 +60,6 @@ public class PetServiceImpl implements PetService {
         pet.setActionCount(0);
         pet.setDead(false);
         pet.setDeathAt(null);
-
         Pet saved = petRepository.save(pet);
         return petMapper.toResponse(saved);
     }
@@ -84,11 +68,9 @@ public class PetServiceImpl implements PetService {
     public List<PetResponse> getAllPets(String userEmail) {
         User user = getCurrentUser(userEmail);
         boolean isAdmin = isAdmin(user);
-
         List<Pet> pets = isAdmin
                 ? petRepository.findAll()
                 : petRepository.findAllByOwnerId(user.getId());
-
         return pets.stream().map(petMapper::toResponse).toList();
     }
 
@@ -112,7 +94,7 @@ public class PetServiceImpl implements PetService {
         petRepository.delete(pet);
     }
 
-    // ========== ACTIONS ==========
+    // ========== ACTIONS (with difficult preset) ==========
 
     @Transactional
     @Override
@@ -124,13 +106,15 @@ public class PetServiceImpl implements PetService {
             throw new PetNotHungryException();
         }
 
-        pet.setHunger(Math.max(0, pet.getHunger() - 50));
-        pet.setHygiene(Math.max(0, pet.getHygiene() - 5));
+        // Difficult preset: feed is less potent
+        pet.setHunger(Math.max(0, pet.getHunger() - 30)); // -30
+        pet.setHygiene(Math.max(0, pet.getHygiene() - 8)); // -8
+        pet.setFun(Math.max(0, pet.getFun() - 20));       // -20
 
         incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
-        return toActionResponseWithMessage(saved);
+        return buildResponseWithWarnings(saved);
     }
 
     @Transactional
@@ -143,13 +127,15 @@ public class PetServiceImpl implements PetService {
             throw new PetAlreadyCleanException();
         }
 
-        pet.setHygiene(Math.min(100, pet.getHygiene() + 30));
-        pet.setHunger(Math.min(100, pet.getHunger() + 5));
+        // Difficult preset: wash gives less hygiene and costs more hunger/fun
+        pet.setHygiene(Math.min(100, pet.getHygiene() + 18)); // +18
+        pet.setHunger(Math.min(100, pet.getHunger() + 18));  // +18
+        pet.setFun(Math.max(0, pet.getFun() - 25));          // -25
 
         incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
-        return toActionResponseWithMessage(saved);
+        return buildResponseWithWarnings(saved);
     }
 
     @Transactional
@@ -162,13 +148,15 @@ public class PetServiceImpl implements PetService {
             throw new PetTooHappyException();
         }
 
-        pet.setFun(Math.min(100, pet.getFun() + 40));
-        pet.setHunger(Math.min(100, pet.getHunger() + 10));
+        // Difficult preset: play gives moderate fun but costs more hunger and some hygiene
+        pet.setFun(Math.min(100, pet.getFun() + 28));         // +28
+        pet.setHunger(Math.min(100, pet.getHunger() + 22));   // +22
+        pet.setHygiene(Math.max(0, pet.getHygiene() - 8));    // -8
 
         incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
-        return toActionResponseWithMessage(saved);
+        return buildResponseWithWarnings(saved);
     }
 
     // ========== HELPERS ==========
@@ -193,7 +181,6 @@ public class PetServiceImpl implements PetService {
         return pet;
     }
 
-    /** Prevent actions on dead pets */
     private void checkIfDead(Pet pet) {
         if (pet.isDead() || pet.getLifeStage() == LifeStage.PASSED) {
             throw new PetDeceasedException();
@@ -201,22 +188,24 @@ public class PetServiceImpl implements PetService {
     }
 
     /**
-     * Increment counter, update stage, and evaluate deaths.
-     * Death triggers:
-     * - Hunger == 100
-     * - Hygiene == 0 AND Fun == 0
-     * - Senior with >=15 total actions
-     * When dead → set PASSED stage
+     * incrementAndEvaluateDeaths:
+     * - Apply per-action passive tick (difficult): hunger +15, hygiene -12, fun -12
+     * - Update actionCount and stage
+     * - Evaluate death by stats or senior rule
      */
     private void incrementAndEvaluateDeaths(Pet pet) {
-        pet.setActionCount(pet.getActionCount() + 1);
+        // Passive tick per action (difficult)
+        pet.setHunger(Math.min(100, pet.getHunger() + 15));
+        pet.setHygiene(Math.max(0, pet.getHygiene() - 12));
+        pet.setFun(Math.max(0, pet.getFun() - 12));
 
-        // Skip stage updates if already passed away
+        // Count action and update stage (unless passed)
+        pet.setActionCount(pet.getActionCount() + 1);
         if (!pet.isDead() && pet.getLifeStage() != LifeStage.PASSED) {
             updateLifeStage(pet);
         }
 
-        // Check for stat-based deaths
+        // Death conditions (same as before)
         if (pet.getHunger() == 100 || (pet.getHygiene() == 0 && pet.getFun() == 0)) {
             pet.setDead(true);
             pet.setLifeStage(LifeStage.PASSED);
@@ -224,7 +213,6 @@ public class PetServiceImpl implements PetService {
             return;
         }
 
-        // Natural death by age
         if (pet.getLifeStage() == LifeStage.SENIOR && pet.getActionCount() >= 15) {
             pet.setDead(true);
             pet.setLifeStage(LifeStage.PASSED);
@@ -232,22 +220,38 @@ public class PetServiceImpl implements PetService {
         }
     }
 
-    /** Update life stage according to actions count */
     private void updateLifeStage(Pet pet) {
         if (pet.isDead() || pet.getLifeStage() == LifeStage.PASSED) return;
-
         int count = pet.getActionCount();
         if (count <= 4) pet.setLifeStage(LifeStage.BABY);
         else if (count <= 9) pet.setLifeStage(LifeStage.ADULT);
         else pet.setLifeStage(LifeStage.SENIOR);
     }
 
-    /** Build action response with message if pet has passed */
-    private PetActionResponse toActionResponseWithMessage(Pet saved) {
+    /**
+     * Build PetActionResponse, set message if dead and populate warnings list.
+     * Warning thresholds (difficult tuning):
+     *  - hunger >= 75 -> "hunger_high"
+     *  - hygiene <= 25 -> "hygiene_low"
+     *  - fun <= 25 -> "fun_low"
+     */
+    private PetActionResponse buildResponseWithWarnings(Pet saved) {
         PetActionResponse resp = petMapper.toActionResponse(saved);
+
+        // message on death
         if (saved.isDead() || saved.getLifeStage() == LifeStage.PASSED) {
             resp.setMessage("Your pet has passed away 💔");
         }
+
+        // build warnings
+        List<String> warnings = new ArrayList<>();
+        if (!saved.isDead()) {
+            if (saved.getHunger() >= 75) warnings.add("hunger_high");
+            if (saved.getHygiene() <= 25) warnings.add("hygiene_low");
+            if (saved.getFun() <= 25) warnings.add("fun_low");
+        }
+        resp.setWarnings(warnings.isEmpty() ? null : warnings);
+
         return resp;
     }
 }

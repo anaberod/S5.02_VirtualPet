@@ -5,17 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="660d5f19-cb0a-4c8a-9325-5534ae8d0e33" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../BEZIP1.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/dto/pet/PetActionResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/dto/pet/PetActionResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/domain/pet/enums/LifeStage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/domain/pet/enums/LifeStage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/app/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/domain/pet/enums/LifeStage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/domain/pet/enums/LifeStage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/error/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/error/GlobalExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/app/pets/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/pets/[id]/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/components/pet-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/components/pet-card.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/lib/pet-images.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/lib/pet-images.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/lib/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/lib/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/public/pets/dalmatian_passed.png" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/public/pets/dalmatian_passed.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/public/pets/dalmatian_senior.png" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/public/pets/dalmatian_senior.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/public/pets/golden_adult.png" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/public/pets/golden_adult.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/public/pets/golden_baby.png" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/public/pets/golden_baby.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/public/pets/golden_passed.png" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/public/pets/golden_passed.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/public/pets/golden_senior.png" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/public/pets/golden_senior.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/public/pets/labrador_passed.png" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/public/pets/labrador_passed.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/public/pets/labrador_senior.png" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/public/pets/labrador_senior.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,6 +89,7 @@
       </envs>
       <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.BackendApplication" />
       <module name="backend" />
+      <option name="PROGRAM_PARAMETERS" value="--server.error.include-message=always --server.error.include-binding-errors=always --server.error.include-stacktrace=always --spring.jpa.show-sql=true --logging.level.org.hibernate.SQL=DEBUG --logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE " />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="cat.itacademy.virtualpet.*" />
@@ -154,6 +162,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.BackendApplication" />
+      <item itemvalue="JUnit.AuthControllerTest" />
+      <item itemvalue="JUnit.AuthControllerTest.register_createsUser" />
+      <item itemvalue="JUnit.PetsControllerTest" />
+      <item itemvalue="JUnit.PetsControllerTest.actions_shouldRespectRules" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.BackendApplication" />
