@@ -7,10 +7,7 @@ import cat.itacademy.virtualpet.domain.pet.PetRepository;
 import cat.itacademy.virtualpet.domain.pet.enums.LifeStage;
 import cat.itacademy.virtualpet.domain.user.User;
 import cat.itacademy.virtualpet.domain.user.UserRepository;
-import cat.itacademy.virtualpet.web.error.PetAlreadyCleanException;
-import cat.itacademy.virtualpet.web.error.PetDeceasedException;
-import cat.itacademy.virtualpet.web.error.PetNotHungryException;
-import cat.itacademy.virtualpet.web.error.PetTooHappyException;
+import cat.itacademy.virtualpet.web.error.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,10 +21,13 @@ import java.util.List;
 /**
  * Implementation of PetService with business rules:
  * - Stats clamping (0–100)
- * - Evolution by action count
- * - Death after 5 actions in SENIOR stage
- * - Hard caps (409) when main stat is at its boundary
- * - Instant death by stats: hunger==100 OR (hygiene==0 AND fun==0)
+ * - LifeStage evolution (BABY → ADULT → SENIOR)
+ * - Death rules:
+ *     - Hunger == 100 → instant death
+ *     - Hygiene == 0 AND Fun == 0 → instant death
+ *     - 5 actions in SENIOR (≥15 total) → natural death
+ * - When dead → LifeStage becomes PASSED
+ * - Hard caps (409): prevent actions if stat already at limit
  */
 @Service
 public class PetServiceImpl implements PetService {
@@ -120,16 +120,13 @@ public class PetServiceImpl implements PetService {
         Pet pet = findPetByIdAndCheckAccess(id, userEmail);
         checkIfDead(pet);
 
-        // Hard cap: cannot feed if hunger already at minimum (0)
         if (pet.getHunger() == 0) {
             throw new PetNotHungryException();
         }
 
-        // Apply effects (clamped)
         pet.setHunger(Math.max(0, pet.getHunger() - 50));
         pet.setHygiene(Math.max(0, pet.getHygiene() - 5));
 
-        // Count action & update stage, then evaluate deaths (stats or senior)
         incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
@@ -142,16 +139,13 @@ public class PetServiceImpl implements PetService {
         Pet pet = findPetByIdAndCheckAccess(id, userEmail);
         checkIfDead(pet);
 
-        // Hard cap: cannot wash if hygiene already at maximum (100)
         if (pet.getHygiene() == 100) {
             throw new PetAlreadyCleanException();
         }
 
-        // Apply effects (clamped)
         pet.setHygiene(Math.min(100, pet.getHygiene() + 30));
         pet.setHunger(Math.min(100, pet.getHunger() + 5));
 
-        // Count action & update stage, then evaluate deaths (stats or senior)
         incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
@@ -164,16 +158,13 @@ public class PetServiceImpl implements PetService {
         Pet pet = findPetByIdAndCheckAccess(id, userEmail);
         checkIfDead(pet);
 
-        // Hard cap: cannot play if fun already at maximum (100)
         if (pet.getFun() == 100) {
             throw new PetTooHappyException();
         }
 
-        // Apply effects (clamped)
         pet.setFun(Math.min(100, pet.getFun() + 40));
         pet.setHunger(Math.min(100, pet.getHunger() + 10));
 
-        // Count action & update stage, then evaluate deaths (stats or senior)
         incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
@@ -202,49 +193,59 @@ public class PetServiceImpl implements PetService {
         return pet;
     }
 
-    /** Lanzar excepción si la mascota ya está muerta */
+    /** Prevent actions on dead pets */
     private void checkIfDead(Pet pet) {
-        if (pet.isDead()) {
+        if (pet.isDead() || pet.getLifeStage() == LifeStage.PASSED) {
             throw new PetDeceasedException();
         }
     }
 
     /**
-     * Incrementa contador, actualiza etapa y evalúa muerte:
-     * - Instant death by stats: hunger==100 OR (hygiene==0 AND fun==0)
-     * - Death by senior rule: 5 actions in SENIOR (>=15 total)
+     * Increment counter, update stage, and evaluate deaths.
+     * Death triggers:
+     * - Hunger == 100
+     * - Hygiene == 0 AND Fun == 0
+     * - Senior with >=15 total actions
+     * When dead → set PASSED stage
      */
     private void incrementAndEvaluateDeaths(Pet pet) {
-        // 1) Contar acción y actualizar etapa
         pet.setActionCount(pet.getActionCount() + 1);
-        updateLifeStage(pet);
 
-        // 2) Muerte por umbrales de stats
+        // Skip stage updates if already passed away
+        if (!pet.isDead() && pet.getLifeStage() != LifeStage.PASSED) {
+            updateLifeStage(pet);
+        }
+
+        // Check for stat-based deaths
         if (pet.getHunger() == 100 || (pet.getHygiene() == 0 && pet.getFun() == 0)) {
             pet.setDead(true);
+            pet.setLifeStage(LifeStage.PASSED);
             pet.setDeathAt(Instant.now());
             return;
         }
 
-        // 3) Muerte por acumulación en SENIOR
+        // Natural death by age
         if (pet.getLifeStage() == LifeStage.SENIOR && pet.getActionCount() >= 15) {
             pet.setDead(true);
+            pet.setLifeStage(LifeStage.PASSED);
             pet.setDeathAt(Instant.now());
         }
     }
 
-    /** Cambia la etapa de vida según el número de acciones */
+    /** Update life stage according to actions count */
     private void updateLifeStage(Pet pet) {
+        if (pet.isDead() || pet.getLifeStage() == LifeStage.PASSED) return;
+
         int count = pet.getActionCount();
         if (count <= 4) pet.setLifeStage(LifeStage.BABY);
         else if (count <= 9) pet.setLifeStage(LifeStage.ADULT);
         else pet.setLifeStage(LifeStage.SENIOR);
     }
 
-    /** Construye la respuesta de acción con mensaje si la mascota ha muerto */
+    /** Build action response with message if pet has passed */
     private PetActionResponse toActionResponseWithMessage(Pet saved) {
         PetActionResponse resp = petMapper.toActionResponse(saved);
-        if (saved.isDead()) {
+        if (saved.isDead() || saved.getLifeStage() == LifeStage.PASSED) {
             resp.setMessage("Your pet has passed away 💔");
         }
         return resp;
