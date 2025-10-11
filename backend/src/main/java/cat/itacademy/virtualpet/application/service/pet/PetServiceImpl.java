@@ -7,7 +7,10 @@ import cat.itacademy.virtualpet.domain.pet.PetRepository;
 import cat.itacademy.virtualpet.domain.pet.enums.LifeStage;
 import cat.itacademy.virtualpet.domain.user.User;
 import cat.itacademy.virtualpet.domain.user.UserRepository;
+import cat.itacademy.virtualpet.web.error.PetAlreadyCleanException;
 import cat.itacademy.virtualpet.web.error.PetDeceasedException;
+import cat.itacademy.virtualpet.web.error.PetNotHungryException;
+import cat.itacademy.virtualpet.web.error.PetTooHappyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,8 @@ import java.util.List;
  * - Stats clamping (0–100)
  * - Evolution by action count
  * - Death after 5 actions in SENIOR stage
+ * - Hard caps (409) when main stat is at its boundary
+ * - Instant death by stats: hunger==100 OR (hygiene==0 AND fun==0)
  */
 @Service
 public class PetServiceImpl implements PetService {
@@ -115,9 +120,17 @@ public class PetServiceImpl implements PetService {
         Pet pet = findPetByIdAndCheckAccess(id, userEmail);
         checkIfDead(pet);
 
+        // Hard cap: cannot feed if hunger already at minimum (0)
+        if (pet.getHunger() == 0) {
+            throw new PetNotHungryException();
+        }
+
+        // Apply effects (clamped)
         pet.setHunger(Math.max(0, pet.getHunger() - 50));
         pet.setHygiene(Math.max(0, pet.getHygiene() - 5));
-        incrementActionsAndCheckDeath(pet);
+
+        // Count action & update stage, then evaluate deaths (stats or senior)
+        incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
         return toActionResponseWithMessage(saved);
@@ -129,9 +142,17 @@ public class PetServiceImpl implements PetService {
         Pet pet = findPetByIdAndCheckAccess(id, userEmail);
         checkIfDead(pet);
 
+        // Hard cap: cannot wash if hygiene already at maximum (100)
+        if (pet.getHygiene() == 100) {
+            throw new PetAlreadyCleanException();
+        }
+
+        // Apply effects (clamped)
         pet.setHygiene(Math.min(100, pet.getHygiene() + 30));
         pet.setHunger(Math.min(100, pet.getHunger() + 5));
-        incrementActionsAndCheckDeath(pet);
+
+        // Count action & update stage, then evaluate deaths (stats or senior)
+        incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
         return toActionResponseWithMessage(saved);
@@ -143,9 +164,17 @@ public class PetServiceImpl implements PetService {
         Pet pet = findPetByIdAndCheckAccess(id, userEmail);
         checkIfDead(pet);
 
+        // Hard cap: cannot play if fun already at maximum (100)
+        if (pet.getFun() == 100) {
+            throw new PetTooHappyException();
+        }
+
+        // Apply effects (clamped)
         pet.setFun(Math.min(100, pet.getFun() + 40));
         pet.setHunger(Math.min(100, pet.getHunger() + 10));
-        incrementActionsAndCheckDeath(pet);
+
+        // Count action & update stage, then evaluate deaths (stats or senior)
+        incrementAndEvaluateDeaths(pet);
 
         Pet saved = petRepository.save(pet);
         return toActionResponseWithMessage(saved);
@@ -180,12 +209,24 @@ public class PetServiceImpl implements PetService {
         }
     }
 
-    /** Incrementa contador, actualiza etapa y comprueba si muere */
-    private void incrementActionsAndCheckDeath(Pet pet) {
+    /**
+     * Incrementa contador, actualiza etapa y evalúa muerte:
+     * - Instant death by stats: hunger==100 OR (hygiene==0 AND fun==0)
+     * - Death by senior rule: 5 actions in SENIOR (>=15 total)
+     */
+    private void incrementAndEvaluateDeaths(Pet pet) {
+        // 1) Contar acción y actualizar etapa
         pet.setActionCount(pet.getActionCount() + 1);
         updateLifeStage(pet);
 
-        // Death rule: 5 actions in SENIOR (≈ action #15 total)
+        // 2) Muerte por umbrales de stats
+        if (pet.getHunger() == 100 || (pet.getHygiene() == 0 && pet.getFun() == 0)) {
+            pet.setDead(true);
+            pet.setDeathAt(Instant.now());
+            return;
+        }
+
+        // 3) Muerte por acumulación en SENIOR
         if (pet.getLifeStage() == LifeStage.SENIOR && pet.getActionCount() >= 15) {
             pet.setDead(true);
             pet.setDeathAt(Instant.now());

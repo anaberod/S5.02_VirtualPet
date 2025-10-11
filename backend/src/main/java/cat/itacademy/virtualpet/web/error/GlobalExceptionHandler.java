@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
+
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +81,25 @@ public class GlobalExceptionHandler {
         // 410 Gone porque el recurso (mascota viva) ya no está disponible
         return build(HttpStatus.GONE, ex.getMessage(), req.getRequestURI());
     }
+
+    @ExceptionHandler(PetNotHungryException.class)
+    public ResponseEntity<Map<String, Object>> petNotHungry(PetNotHungryException ex,
+                                                            HttpServletRequest req) {
+        return build(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(PetAlreadyCleanException.class)
+    public ResponseEntity<Map<String, Object>> petAlreadyClean(PetAlreadyCleanException ex,
+                                                               HttpServletRequest req) {
+        return build(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(PetTooHappyException.class)
+    public ResponseEntity<Map<String, Object>> petTooHappy(PetTooHappyException ex,
+                                                           HttpServletRequest req) {
+        return build(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
+    }
+
 
 
 

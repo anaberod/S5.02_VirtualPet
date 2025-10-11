@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-10-08T13:13:57+0200",
+    date = "2025-10-11T12:22:23+0200",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -49,6 +49,8 @@ public class PetMapperImpl implements PetMapper {
         petResponse.setFun( pet.getFun() );
         petResponse.setActionCount( pet.getActionCount() );
         petResponse.setCreatedAt( pet.getCreatedAt() );
+        petResponse.setDead( pet.isDead() );
+        petResponse.setDeathAt( pet.getDeathAt() );
 
         return petResponse;
     }
@@ -71,6 +73,8 @@ public class PetMapperImpl implements PetMapper {
         petActionResponse.setFun( pet.getFun() );
         petActionResponse.setActionCount( pet.getActionCount() );
         petActionResponse.setCreatedAt( pet.getCreatedAt() );
+        petActionResponse.setDead( pet.isDead() );
+        petActionResponse.setDeathAt( pet.getDeathAt() );
 
         return petActionResponse;
     }
