@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { StatBar } from "@/components/stat-bar"
 import { usePetsStore } from "@/lib/stores/pets-store"
+import apiClient from "@/lib/api-client"
 import type { PetResponse } from "@/lib/types"
 
 const BREED_LABELS: Record<string, string> = {
@@ -30,16 +31,52 @@ function PetDetailPage() {
   const params = useParams()
   const router = useRouter()
   const id = params.id as string
-  const { items, remove } = usePetsStore()
+  const { remove } = usePetsStore()
   const [pet, setPet] = useState<PetResponse | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchPet = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await apiClient.get<PetResponse>(`/pets/${id}`)
+      setPet(response.data)
+    } catch (error: any) {
+      console.error("[v0] Pet details: Failed to fetch pet:", error)
+      if (error.response?.status === 401) {
+        setError("You are not authorized to view this pet. Please log in again.")
+      } else if (error.response?.status === 403) {
+        setError("You don't have permission to view this pet.")
+      } else if (error.response?.status === 404) {
+        setError("Pet not found.")
+      } else {
+        setError("Failed to load pet details. Please try again.")
+      }
+      toast.error(error.response?.data?.message || "Failed to load pet details")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const foundPet = items.find((p) => p.id === Number(id))
-    if (foundPet) {
-      setPet(foundPet)
+    if (id) {
+      fetchPet()
     }
-  }, [id, items])
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && id) {
+        fetchPet()
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [id])
 
   const handleDelete = async () => {
     if (!pet) return
@@ -60,10 +97,48 @@ function PetDetailPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <AppHeader />
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <p className="text-muted-foreground">Loading pet details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen">
+        <AppHeader />
+        <main className="container mx-auto px-4 py-8">
+          <Button variant="ghost" size="sm" onClick={() => router.push("/app")} className="mb-4">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4">
+            <p className="text-lg text-muted-foreground">{error}</p>
+            <Button onClick={fetchPet}>Try Again</Button>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
   if (!pet) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-muted-foreground">Pet not found</p>
+      <div className="min-h-screen">
+        <AppHeader />
+        <main className="container mx-auto px-4 py-8">
+          <Button variant="ghost" size="sm" onClick={() => router.push("/app")} className="mb-4">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <div className="flex min-h-[50vh] items-center justify-center">
+            <p className="text-muted-foreground">Pet not found</p>
+          </div>
+        </main>
       </div>
     )
   }
@@ -71,7 +146,7 @@ function PetDetailPage() {
   const isPassed = pet.dead || pet.lifeStage === "PASSED"
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <AppHeader />
 
       <main className="container mx-auto px-4 py-8">
@@ -116,20 +191,14 @@ function PetDetailPage() {
                 <>
                   <div className="space-y-4">
                     <h3 className="font-semibold">Statistics</h3>
-                    <StatBar label="Hunger" value={100 - pet.hunger} />
+                    <StatBar label="Hunger" value={pet.hunger} />
                     <StatBar label="Hygiene" value={pet.hygiene} />
                     <StatBar label="Fun" value={pet.fun} />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Actions Count</p>
-                      <p className="text-2xl font-bold">{pet.actionsCount}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Life Stage</p>
-                      <p className="text-2xl font-bold">{STAGE_LABELS[pet.lifeStage]}</p>
-                    </div>
+                  <div className="pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground">Life Stage</p>
+                    <p className="text-2xl font-bold">{STAGE_LABELS[pet.lifeStage]}</p>
                   </div>
 
                   <div className="pt-4 border-t border-border">

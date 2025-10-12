@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import apiClient from "@/lib/api-client"
-import type { PetResponse } from "@/lib/types"
+import type { PetResponse, UserResponse } from "@/lib/types"
 
 const BREED_LABELS: Record<string, string> = {
   DALMATIAN: "Dalmatian",
@@ -28,31 +28,42 @@ const STAGE_LABELS: Record<string, string> = {
 function AdminPetsPage() {
   const router = useRouter()
   const [pets, setPets] = useState<PetResponse[]>([])
+  const [users, setUsers] = useState<UserResponse[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchAllPets = async () => {
+    const fetchData = async () => {
       try {
-        const response = await apiClient.get("/admin/pets")
+        const [petsResponse, usersResponse] = await Promise.all([
+          apiClient.get("/admin/pets"),
+          apiClient.get<UserResponse[]>("/admin/users"),
+        ])
 
         let petsData: PetResponse[] = []
-        if (Array.isArray(response.data)) {
-          petsData = response.data
-        } else if (response.data?.content) {
-          petsData = response.data.content
-        } else if (response.data?.pets) {
-          petsData = response.data.pets
+        if (Array.isArray(petsResponse.data)) {
+          petsData = petsResponse.data
+        } else if (petsResponse.data?.content) {
+          petsData = petsResponse.data.content
+        } else if (petsResponse.data?.pets) {
+          petsData = petsResponse.data.pets
         }
 
         setPets(petsData)
+        setUsers(usersResponse.data)
       } catch (error) {
-        console.error("Failed to fetch pets", error)
+        console.error("Failed to fetch data", error)
       } finally {
         setLoading(false)
       }
     }
-    fetchAllPets()
+    fetchData()
   }, [])
+
+  const getOwnerUsername = (ownerId?: number): string => {
+    if (!ownerId) return "Unknown"
+    const user = users.find((u) => u.id === ownerId)
+    return user?.username || `User #${ownerId}`
+  }
 
   return (
     <div className="min-h-screen">
@@ -87,9 +98,7 @@ function AdminPetsPage() {
                       <TableHead>Name</TableHead>
                       <TableHead>Breed</TableHead>
                       <TableHead>Stage</TableHead>
-                      <TableHead>Hunger</TableHead>
-                      <TableHead>Hygiene</TableHead>
-                      <TableHead>Fun</TableHead>
+                      <TableHead>Owner</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -101,9 +110,7 @@ function AdminPetsPage() {
                         <TableCell>
                           <Badge variant="secondary">{STAGE_LABELS[pet.lifeStage]}</Badge>
                         </TableCell>
-                        <TableCell>{pet.hunger}</TableCell>
-                        <TableCell>{pet.hygiene}</TableCell>
-                        <TableCell>{pet.fun}</TableCell>
+                        <TableCell>{getOwnerUsername(pet.ownerId)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

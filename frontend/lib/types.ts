@@ -8,12 +8,18 @@ export interface PetResponse {
   hunger: number
   hygiene: number
   fun: number
-  actionsCount: number
+  actionCount: number
   lifeStage: LifeStage
   createdAt: string
   updatedAt: string
   dead: boolean
   deathAt: string | null
+  ownerId?: number
+  owner?: {
+    id: number
+    username: string
+    email: string
+  }
 }
 
 export interface PetActionResponse extends PetResponse {
