@@ -22,6 +22,7 @@ const STAGE_LABELS: Record<string, string> = {
   BABY: "Baby",
   ADULT: "Adult",
   SENIOR: "Senior",
+  PASSED: "Passed",
 }
 
 function AdminPetsPage() {
@@ -54,7 +55,7 @@ function AdminPetsPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <AppHeader />
 
       <main className="container mx-auto px-4 py-8">
@@ -89,7 +90,6 @@ function AdminPetsPage() {
                       <TableHead>Hunger</TableHead>
                       <TableHead>Hygiene</TableHead>
                       <TableHead>Fun</TableHead>
-                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -101,10 +101,9 @@ function AdminPetsPage() {
                         <TableCell>
                           <Badge variant="secondary">{STAGE_LABELS[pet.lifeStage]}</Badge>
                         </TableCell>
-                        <TableCell>{100 - pet.hunger}</TableCell>
+                        <TableCell>{pet.hunger}</TableCell>
                         <TableCell>{pet.hygiene}</TableCell>
                         <TableCell>{pet.fun}</TableCell>
-                        <TableCell>{pet.actionsCount}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

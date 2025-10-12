@@ -3,10 +3,11 @@
 import { useState } from "react"
 import Image from "next/image"
 import { toast } from "sonner"
-import { Utensils, Sparkles, Gamepad2 } from "lucide-react"
+import { Utensils, Sparkles, Gamepad2, AlertTriangle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { StatBar } from "@/components/stat-bar"
 import { usePetsStore } from "@/lib/stores/pets-store"
 import type { PetResponse } from "@/lib/types"
@@ -32,20 +33,85 @@ const STAGE_LABELS: Record<string, string> = {
 }
 
 export function PetCard({ pet, onViewDetails, readOnly = false }: PetCardProps) {
-  const { act } = usePetsStore()
+  const { act, fetchAll } = usePetsStore()
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [imageError, setImageError] = useState(false)
+  const [warnings, setWarnings] = useState<string[]>([])
+
+  const hasWarnings = warnings.length > 0
+  const isStarving = warnings.includes("hunger_high")
+  const isLowHygiene = warnings.includes("hygiene_low")
+  const isLowFun = warnings.includes("fun_low")
 
   const handleAction = async (action: "feed" | "wash" | "play") => {
+    if (pet.dead || pet.lifeStage === "PASSED") {
+      toast.error(`${pet.name} has passed away and cannot perform actions`)
+      return
+    }
+
     setActionLoading(action)
     try {
-      await act(pet.id, action)
-      toast.success(`${pet.name} has been ${action === "feed" ? "fed" : action === "wash" ? "washed" : "played with"}!`)
+      const response = await act(pet.id, action)
+
+      setWarnings(response.warnings || [])
+
+      if (response.dead || response.lifeStage === "PASSED") {
+        toast.error(response.message || `${pet.name} has passed away...`, {
+          description: "Rest in peace, dear friend.",
+          duration: 5000,
+        })
+      } else {
+        if (response.warnings && response.warnings.length > 0) {
+          const warningMessages = response.warnings.map((w) => {
+            if (w === "hunger_high") return "Hunger is getting high!"
+            if (w === "hygiene_low") return "Hygiene is getting low!"
+            if (w === "fun_low") return "Fun is getting low!"
+            return w
+          })
+          toast.warning(`${pet.name} needs attention!`, {
+            description: warningMessages.join(" "),
+            duration: 4000,
+          })
+        } else {
+          toast.success(
+            `${pet.name} has been ${action === "feed" ? "fed" : action === "wash" ? "washed" : "played with"}!`,
+          )
+        }
+      }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || `Failed to ${action}`)
+      console.error("[v0] Action error:", error.response?.status, error.response?.data)
+
+      await fetchAll()
+
+      const errorMessage = error.response?.data?.message || ""
+
+      if (errorMessage.includes("not hungry") || errorMessage.includes("PetNotHungryException")) {
+        toast.info(`${pet.name} is not hungry right now!`)
+      } else if (errorMessage.includes("already clean") || errorMessage.includes("PetAlreadyCleanException")) {
+        toast.info(`${pet.name} is already clean!`)
+      } else if (errorMessage.includes("too happy") || errorMessage.includes("PetTooHappyException")) {
+        toast.info(`${pet.name} is already very happy!`)
+      } else if (errorMessage.includes("deceased") || errorMessage.includes("PetDeceasedException")) {
+        toast.error(`${pet.name} has passed away`, {
+          description: "This pet can no longer perform actions.",
+        })
+      } else if (error.response?.status === 500) {
+        toast.error(`Something went wrong with ${pet.name}`, {
+          description: "Please refresh the page to see the latest status.",
+          duration: 6000,
+        })
+      } else {
+        toast.error(errorMessage || `Failed to ${action}`)
+      }
     } finally {
       setActionLoading(null)
     }
+  }
+
+  const getHungerColor = (value: number): "success" | "warning" | "danger" => {
+    if (value <= 30) return "success"
+    if (value <= 70) return "warning"
+    return "danger"
   }
 
   const getStatColor = (value: number): "success" | "warning" | "danger" => {
@@ -55,7 +121,10 @@ export function PetCard({ pet, onViewDetails, readOnly = false }: PetCardProps) 
   }
 
   const imageUrl = getPetImageUrl(pet.breed, pet.lifeStage)
-  const imageUrlWithCache = pet.lifeStage === "PASSED" ? `${imageUrl}?v=${pet.id}` : imageUrl
+  const imageUrlWithCache =
+    pet.lifeStage === "PASSED"
+      ? `${imageUrl}?stage=passed&t=${pet.deathAt ? new Date(pet.deathAt).getTime() : Date.now()}`
+      : imageUrl
   const isPassed = pet.dead || pet.lifeStage === "PASSED"
 
   return (
@@ -78,11 +147,13 @@ export function PetCard({ pet, onViewDetails, readOnly = false }: PetCardProps) 
                   pet.breed,
                   "stage:",
                   pet.lifeStage,
+                  "dead:",
+                  pet.dead,
                 )
                 setImageError(true)
               }}
               onLoad={() => {
-                console.log("[v0] Image loaded successfully:", imageUrlWithCache)
+                console.log("[v0] Image loaded successfully:", imageUrlWithCache, "stage:", pet.lifeStage)
               }}
             />
           </div>
@@ -100,8 +171,19 @@ export function PetCard({ pet, onViewDetails, readOnly = false }: PetCardProps) 
       <CardContent className="space-y-4">
         {!isPassed && (
           <>
+            {hasWarnings && (
+              <Alert variant="destructive" className="mb-3">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription className="text-xs font-semibold">
+                  {isStarving && "WARNING: Hunger is getting high! "}
+                  {isLowHygiene && "WARNING: Hygiene is getting low! "}
+                  {isLowFun && "WARNING: Fun is getting low!"}
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-3">
-              <StatBar label="Hunger" value={100 - pet.hunger} color={getStatColor(100 - pet.hunger)} />
+              <StatBar label="Hunger" value={pet.hunger} color={getHungerColor(pet.hunger)} />
               <StatBar label="Hygiene" value={pet.hygiene} color={getStatColor(pet.hygiene)} />
               <StatBar label="Fun" value={pet.fun} color={getStatColor(pet.fun)} />
             </div>
@@ -112,7 +194,7 @@ export function PetCard({ pet, onViewDetails, readOnly = false }: PetCardProps) 
                   size="sm"
                   variant="outline"
                   onClick={() => handleAction("feed")}
-                  disabled={actionLoading !== null}
+                  disabled={actionLoading !== null || isPassed}
                   className="flex flex-col gap-1 h-auto py-3 hover:scale-105 transition-transform"
                 >
                   <Utensils className="h-5 w-5" />
@@ -122,7 +204,7 @@ export function PetCard({ pet, onViewDetails, readOnly = false }: PetCardProps) 
                   size="sm"
                   variant="outline"
                   onClick={() => handleAction("wash")}
-                  disabled={actionLoading !== null}
+                  disabled={actionLoading !== null || isPassed}
                   className="flex flex-col gap-1 h-auto py-3 hover:scale-105 transition-transform"
                 >
                   <Sparkles className="h-5 w-5" />
@@ -132,7 +214,7 @@ export function PetCard({ pet, onViewDetails, readOnly = false }: PetCardProps) 
                   size="sm"
                   variant="outline"
                   onClick={() => handleAction("play")}
-                  disabled={actionLoading !== null}
+                  disabled={actionLoading !== null || isPassed}
                   className="flex flex-col gap-1 h-auto py-3 hover:scale-105 transition-transform"
                 >
                   <Gamepad2 className="h-5 w-5" />

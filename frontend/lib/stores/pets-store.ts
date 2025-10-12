@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import apiClient from "@/lib/api-client"
-import type { PetResponse, CreatePetRequest, UpdatePetRequest } from "@/lib/types"
+import type { PetResponse, CreatePetRequest, UpdatePetRequest, PetActionResponse } from "@/lib/types"
 
 interface PetsState {
   items: PetResponse[]
@@ -10,7 +10,7 @@ interface PetsState {
   create: (data: CreatePetRequest) => Promise<PetResponse>
   update: (id: number, data: UpdatePetRequest) => Promise<PetResponse>
   remove: (id: number) => Promise<void>
-  act: (id: number, action: "feed" | "wash" | "play") => Promise<PetResponse>
+  act: (id: number, action: "feed" | "wash" | "play") => Promise<PetActionResponse>
 }
 
 export const usePetsStore = create<PetsState>((set, get) => ({
@@ -91,7 +91,7 @@ export const usePetsStore = create<PetsState>((set, get) => ({
   act: async (id, action) => {
     set({ loading: true, error: null })
     try {
-      const response = await apiClient.post<PetResponse>(`/pets/${id}/actions/${action}`)
+      const response = await apiClient.post<PetActionResponse>(`/pets/${id}/actions/${action}`)
       set((state) => ({
         items: state.items.map((pet) => (pet.id === id ? response.data : pet)),
         loading: false,

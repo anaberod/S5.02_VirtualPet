@@ -16,6 +16,11 @@ export interface PetResponse {
   deathAt: string | null
 }
 
+export interface PetActionResponse extends PetResponse {
+  message?: string
+  warnings?: string[] | null
+}
+
 export interface CreatePetRequest {
   name: string
   breed: Breed
