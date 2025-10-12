@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Trash2 } from "lucide-react"
+import { toast } from "sonner"
 import { AuthGuard } from "@/components/auth-guard"
 import { AppHeader } from "@/components/app-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -30,6 +31,7 @@ function AdminPetsPage() {
   const [pets, setPets] = useState<PetResponse[]>([])
   const [users, setUsers] = useState<UserResponse[]>([])
   const [loading, setLoading] = useState(true)
+  const [deletingPetId, setDeletingPetId] = useState<number | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +65,23 @@ function AdminPetsPage() {
     if (!ownerId) return "Unknown"
     const user = users.find((u) => u.id === ownerId)
     return user?.username || `User #${ownerId}`
+  }
+
+  const handleDelete = async (pet: PetResponse) => {
+    const confirmed = window.confirm(`Are you sure you want to delete ${pet.name}? This action cannot be undone.`)
+
+    if (!confirmed) return
+
+    setDeletingPetId(pet.id)
+    try {
+      await apiClient.delete(`/pets/${pet.id}`)
+      toast.success(`${pet.name} has been deleted`)
+      setPets((prevPets) => prevPets.filter((p) => p.id !== pet.id))
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to delete pet")
+    } finally {
+      setDeletingPetId(null)
+    }
   }
 
   return (
@@ -99,6 +118,7 @@ function AdminPetsPage() {
                       <TableHead>Breed</TableHead>
                       <TableHead>Stage</TableHead>
                       <TableHead>Owner</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -111,6 +131,17 @@ function AdminPetsPage() {
                           <Badge variant="secondary">{STAGE_LABELS[pet.lifeStage]}</Badge>
                         </TableCell>
                         <TableCell>{getOwnerUsername(pet.ownerId)}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(pet)}
+                            disabled={deletingPetId === pet.id}
+                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
