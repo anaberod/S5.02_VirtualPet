@@ -5,13 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="660d5f19-cb0a-4c8a-9325-5534ae8d0e33" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../BEZIP1.zip" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImplTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/infrastructure/repository/UserRepositoryTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/infrastructure/security/JwtServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/AdminPetsControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/AdminUsersControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/error/GlobalExceptionHandlerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/mapper/PetMapperTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/app/admin/pets/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/admin/pets/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/public/bone-pattern.png" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/public/bone-pattern.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,18 +41,28 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.BackendApplication.executor": "Run",
+    "JUnit.AdminPetsControllerStandaloneTest.executor": "Run",
+    "JUnit.AdminPetsControllerStandaloneTest.listAllPets_ok.executor": "Run",
+    "JUnit.AdminPetsControllerTest.executor": "Run",
+    "JUnit.AdminUsersControllerStandaloneTest.executor": "Run",
     "JUnit.AuthControllerTest.executor": "Run",
     "JUnit.AuthControllerTest.register_createsUser.executor": "Run",
+    "JUnit.GlobalExceptionHandlerTest.executor": "Run",
+    "JUnit.JwtServiceTest.executor": "Run",
+    "JUnit.PetMapperTest.executor": "Run",
     "JUnit.PetRepositoryTest.executor": "Run",
+    "JUnit.PetServiceImplTest.executor": "Run",
     "JUnit.PetsControllerTest.actions_shouldRespectRules.executor": "Run",
     "JUnit.PetsControllerTest.executor": "Run",
     "JUnit.SmokeTest.executor": "Run",
+    "JUnit.UserRepositoryTest (1).executor": "Run",
+    "JUnit.UserRepositoryTest.executor": "Run",
     "Maven.backend [clean].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/anabe/IdeaProjects/S5.02_VirtualPet/frontend",
+    "last_opened_file_path": "C:/Users/anabe/IdeaProjects/S04T02N01",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.46666667",
@@ -74,11 +85,10 @@
   <component name="RunManager" selected="Application.BackendApplication">
     <configuration name="BackendApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <envs>
-        <env name="JWT_SECRET" value="&lt;6SzEu85wt2sSv6s8lLwHdmd0NvUIBHQd4Vu7eNMT89k=&gt;" />
+        <env name="JWT_SECRET" value="MDEyMzQ1Njc4OUFCQ0RFRjAxMjM0NTY3ODlBQkNERUY= " />
       </envs>
       <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.BackendApplication" />
       <module name="backend" />
-      <option name="PROGRAM_PARAMETERS" value="--server.error.include-message=always --server.error.include-binding-errors=always --server.error.include-stacktrace=always --spring.jpa.show-sql=true --logging.level.org.hibernate.SQL=DEBUG --logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE " />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="cat.itacademy.virtualpet.*" />
@@ -89,7 +99,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="AuthControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="AdminUsersControllerStandaloneTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
@@ -98,73 +108,71 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.web.controller" />
-      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.controller.AuthControllerTest" />
+      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.controller.AdminUsersControllerStandaloneTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="AuthControllerTest.register_createsUser" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GlobalExceptionHandlerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="cat.itacademy.virtualpet.web.controller.*" />
+          <option name="PATTERN" value="cat.itacademy.virtualpet.web.error.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.web.controller" />
-      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.controller.AuthControllerTest" />
-      <option name="METHOD_NAME" value="register_createsUser" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="PetsControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="backend" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="cat.itacademy.virtualpet.web.controller.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.web.controller" />
-      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.controller.PetsControllerTest" />
+      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.web.error" />
+      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.error.GlobalExceptionHandlerTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PetsControllerTest.actions_shouldRespectRules" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="UserRepositoryTest (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="cat.itacademy.virtualpet.web.controller.*" />
+          <option name="PATTERN" value="cat.itacademy.virtualpet.infrastructure.repository.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.web.controller" />
-      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.controller.PetsControllerTest" />
-      <option name="METHOD_NAME" value="actions_shouldRespectRules" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.infrastructure.repository" />
+      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.infrastructure.repository.UserRepositoryTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserRepositoryTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="backend" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="cat.itacademy.virtualpet.domain.user.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.domain.user" />
+      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.domain.user.UserRepositoryTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list>
       <item itemvalue="Application.BackendApplication" />
-      <item itemvalue="JUnit.AuthControllerTest" />
-      <item itemvalue="JUnit.AuthControllerTest.register_createsUser" />
-      <item itemvalue="JUnit.PetsControllerTest" />
-      <item itemvalue="JUnit.PetsControllerTest.actions_shouldRespectRules" />
+      <item itemvalue="JUnit.AdminUsersControllerStandaloneTest" />
+      <item itemvalue="JUnit.GlobalExceptionHandlerTest" />
+      <item itemvalue="JUnit.UserRepositoryTest" />
+      <item itemvalue="JUnit.UserRepositoryTest (1)" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.BackendApplication" />
-        <item itemvalue="JUnit.AuthControllerTest" />
-        <item itemvalue="JUnit.AuthControllerTest.register_createsUser" />
-        <item itemvalue="JUnit.PetsControllerTest.actions_shouldRespectRules" />
-        <item itemvalue="JUnit.PetsControllerTest" />
+        <item itemvalue="JUnit.GlobalExceptionHandlerTest" />
+        <item itemvalue="JUnit.UserRepositoryTest (1)" />
+        <item itemvalue="JUnit.UserRepositoryTest" />
+        <item itemvalue="JUnit.AdminUsersControllerStandaloneTest" />
       </list>
     </recent_temporary>
   </component>
