@@ -15,7 +15,7 @@ import { useAuthStore } from "@/lib/stores/auth-store"
 function AppDashboard() {
   const router = useRouter()
   const { items: pets, loading: petsLoading, fetchAll: fetchPets } = usePetsStore()
-  const { items: users, loading: usersLoading, fetchAll: fetchUsers } = useUsersStore()
+  const { items: users, loading: usersLoading, error: usersError, fetchAll: fetchUsers } = useUsersStore()
   const { token, _hasHydrated, isAdmin } = useAuthStore()
 
   useEffect(() => {
@@ -68,6 +68,18 @@ function AppDashboard() {
           {usersLoading && users.length === 0 ? (
             <div className="flex items-center justify-center py-12">
               <p className="text-muted-foreground">Loading users...</p>
+            </div>
+          ) : usersError ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Users className="h-16 w-16 text-destructive mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Error loading users</h3>
+              <p className="text-muted-foreground mb-4">{usersError}</p>
+              <button
+                onClick={() => fetchUsers()}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              >
+                Try Again
+              </button>
             </div>
           ) : users.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">

@@ -36,10 +36,7 @@ function AdminPetsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [petsResponse, usersResponse] = await Promise.all([
-          apiClient.get("/admin/pets"),
-          apiClient.get<UserResponse[]>("/admin/users"),
-        ])
+        const petsResponse = await apiClient.get("/admin/pets")
 
         let petsData: PetResponse[] = []
         if (Array.isArray(petsResponse.data)) {
@@ -51,12 +48,20 @@ function AdminPetsPage() {
         }
 
         setPets(petsData)
+      } catch (error) {
+        console.error("Failed to fetch pets", error)
+        toast.error("Failed to load pets")
+      }
+
+      try {
+        const usersResponse = await apiClient.get<UserResponse[]>("/admin/users")
         setUsers(usersResponse.data)
       } catch (error) {
-        console.error("Failed to fetch data", error)
-      } finally {
-        setLoading(false)
+        console.error("Failed to fetch users", error)
+        toast.warning("Could not load usernames. Showing user IDs instead.")
       }
+
+      setLoading(false)
     }
     fetchData()
   }, [])

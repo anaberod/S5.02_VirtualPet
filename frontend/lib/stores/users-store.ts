@@ -43,8 +43,11 @@ export const useUsersStore = create<UsersState>((set, get) => ({
       set({ items: users, loading: false })
     } catch (error: any) {
       console.error("[v0] Users Store: Error fetching users:", error.response?.status, error.message)
-      set({ error: error.message, loading: false })
-      throw error
+      set({
+        error: error.response?.data?.message || error.message || "Failed to fetch users",
+        loading: false,
+        items: [], // Clear items on error
+      })
     }
   },
 
