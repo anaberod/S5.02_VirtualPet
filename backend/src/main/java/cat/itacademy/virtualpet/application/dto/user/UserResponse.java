@@ -6,10 +6,7 @@ import lombok.Data;
 import java.time.Instant;
 import java.util.Set;
 
-/**
- * Información pública del usuario (sin contraseña).
- * Usada por el admin para listar o ver usuarios.
- */
+
 @Data
 @Schema(description = "Información pública del usuario (sin contraseña).")
 public class UserResponse {

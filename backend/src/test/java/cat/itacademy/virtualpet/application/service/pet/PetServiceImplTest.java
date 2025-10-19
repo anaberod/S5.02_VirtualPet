@@ -116,7 +116,7 @@ class PetServiceImplTest {
         });
     }
 
-    // ---------- FEED ----------
+
 
     @Test
     @DisplayName("feed: hunger -50 (min 0), hygiene -5, +1 acción")
@@ -142,7 +142,7 @@ class PetServiceImplTest {
         verify(petRepository, never()).save(any());
     }
 
-    // ---------- WASH ----------
+
 
     @Test
     @DisplayName("wash: hygiene +30 (max 100), hunger +10 (según impl), +1 acción")
@@ -168,7 +168,7 @@ class PetServiceImplTest {
         verify(petRepository, never()).save(any());
     }
 
-    // ---------- PLAY ----------
+
 
     @Test
     @DisplayName("play: fun +40 (max 100), hunger +15 (según impl), +1 acción")
@@ -192,12 +192,12 @@ class PetServiceImplTest {
         verify(petRepository, never()).save(any());
     }
 
-    // ---------- MUERTE / PASSED ----------
+
 
     @Test
     @DisplayName("muere por hambre: al jugar con hunger ≥ 85 sube a 100 y pasa a PASSED")
     void death_byHungerAtPlay() {
-        pet.setHunger(90); // con +15 llega a 100
+        pet.setHunger(90);
 
         PetActionResponse res = petService.play(1L, OWNER_EMAIL);
 
@@ -238,7 +238,7 @@ class PetServiceImplTest {
         verify(petRepository, never()).save(any());
     }
 
-    // ---------- EVOLUCIÓN DE ETAPA (tests separados) ----------
+
 
     @Test
     @DisplayName("lifeStage: BABY→ADULT al pasar de 4 a 5 acciones")
@@ -264,7 +264,7 @@ class PetServiceImplTest {
         assertThat(saved.getLifeStage()).isEqualTo(LifeStage.SENIOR);
     }
 
-    // ---------- ACCESO / ERRORES ----------
+
 
     @Test
     @DisplayName("feed: 404 si la mascota no existe")
@@ -300,7 +300,7 @@ class PetServiceImplTest {
         verify(petRepository, never()).save(any());
     }
 
-    // ---------- ADMIN: adminListPets ----------
+
 
     @Test
     @DisplayName("adminListPets: 403 si quien llama no es admin")
@@ -364,7 +364,7 @@ class PetServiceImplTest {
         assertThat(res.getNumber()).isEqualTo(0);
     }
 
-    // ---------- Helpers de test ----------
+
 
     private Pet captureLastSavedPet() {
         ArgumentCaptor<Pet> captor = ArgumentCaptor.forClass(Pet.class);

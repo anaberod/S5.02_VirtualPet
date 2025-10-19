@@ -46,12 +46,12 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                // ✅ 401 cuando no hay token / token inválido, 403 cuando falta rol
+
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) // 401
                         .accessDeniedHandler(new AccessDeniedHandlerImpl())                          // 403
                 )
-                // ✅ Filtro JWT antes del de username/password
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

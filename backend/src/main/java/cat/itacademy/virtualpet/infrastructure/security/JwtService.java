@@ -15,12 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Servicio de utilidades JWT:
- * - Genera token (HS256) con subject = email y claims útiles (userId, username, roles, iat, exp).
- * - Extrae email del token.
- * - Valida firma, expiración y coherencia con el usuario.
- */
+
 @Slf4j
 @Service
 public class JwtService {
@@ -31,7 +26,7 @@ public class JwtService {
     @Value("${jwt.expirationMinutes}")
     private long expirationMinutes;
 
-    // ============================= API PÚBLICA =============================
+
 
     public String generateToken(User user) {
         Instant now = Instant.now();
@@ -102,7 +97,7 @@ public class JwtService {
         }
     }
 
-    // ============================= PRIVADOS =============================
+
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()

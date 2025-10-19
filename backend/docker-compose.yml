@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    image: virtualpet-backend:local
+    container_name: virtualpet-backend
+    ports:
+      - "8080:8080"
+    environment:
+
+      - SPRING_PROFILES_ACTIVE=local
+
+
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/virtualpet?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=vp_user
+      - SPRING_DATASOURCE_PASSWORD=vp_pass
+
+
+      - JWT_SECRET=MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI=
+      - JWT_EXPIRATIONMINUTES=120
+    extra_hosts:
+
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

@@ -10,10 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-/**
- * Crea un usuario ADMIN inicial si no existe.
- * Se ejecuta automáticamente al iniciar la aplicación.
- */
+
 @Slf4j
 @Component
 @RequiredArgsConstructor

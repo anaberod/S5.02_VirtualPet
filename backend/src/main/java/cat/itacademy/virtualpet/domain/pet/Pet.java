@@ -6,9 +6,7 @@ import cat.itacademy.virtualpet.domain.user.User;
 import jakarta.persistence.*;
 import java.time.Instant;
 
-/**
- * JPA entity representing a virtual pet.
- */
+
 @Entity
 @Table(name = "pets")
 public class Pet {
@@ -43,7 +41,7 @@ public class Pet {
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
-    // 🆕 Estado de vida/muerte
+
     @Column(nullable = false)
     private boolean dead = false;
 
@@ -55,7 +53,7 @@ public class Pet {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    // ---------- Getters & Setters ----------
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

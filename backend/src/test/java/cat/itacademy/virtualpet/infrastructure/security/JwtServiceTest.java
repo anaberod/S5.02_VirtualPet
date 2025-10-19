@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
-        // Base64 de "12345678901234567890123456789012" (32 bytes → >= 256 bits para HS256)
+
         "jwt.secret=MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI=",
         "jwt.expirationMinutes=10"
 })
@@ -35,7 +35,7 @@ class JwtServiceTest {
     private String secretBase64;
 
     private Key key() {
-        // 👇 igual que tu JwtService (decodifica Base64)
+
         byte[] bytes = Decoders.BASE64.decode(secretBase64);
         return Keys.hmacShaKeyFor(bytes);
     }

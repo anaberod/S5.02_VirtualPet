@@ -27,10 +27,10 @@ class UserRepositoryTest {
         User u = new User();
         u.setUsername("ana");
         u.setEmail("ana@example.com");
-        // según tu entidad: usa setPassword o setPasswordHash
+
         try { u.getClass().getMethod("setPassword", String.class).invoke(u, "{noop}secret"); }
         catch (Exception ignore) { try { u.getClass().getMethod("setPasswordHash", String.class).invoke(u, "{noop}secret"); } catch (Exception e) { /* nada */ } }
-        // si tus roles son Set<String>
+
         try { u.getClass().getMethod("setRoles", Set.class).invoke(u, Set.of("ROLE_USER")); } catch (Exception ignore) {}
 
         userRepository.save(u);

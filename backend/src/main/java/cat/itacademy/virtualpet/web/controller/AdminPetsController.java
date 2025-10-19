@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * ADMIN controller for global pet management.
- * Allows viewing, filtering, deleting and acting on any pet.
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/admin/pets")
@@ -32,7 +29,7 @@ public class AdminPetsController {
         this.petService = petService;
     }
 
-    // ===================== LIST ALL (PAGINATED + FILTER) =====================
+
     @Operation(summary = "List all pets (ADMIN only, paginated)")
     @GetMapping
     public ResponseEntity<Page<PetResponse>> listAllPets(
@@ -56,7 +53,7 @@ public class AdminPetsController {
         }
     }
 
-    // ===================== GET BY ID =====================
+
     @Operation(summary = "Get a pet by ID (ADMIN override)")
     @GetMapping("/{id}")
     public ResponseEntity<PetResponse> getPetById(
@@ -76,7 +73,7 @@ public class AdminPetsController {
         }
     }
 
-    // ===================== DELETE PET =====================
+
     @Operation(summary = "Delete a pet (ADMIN override)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePet(

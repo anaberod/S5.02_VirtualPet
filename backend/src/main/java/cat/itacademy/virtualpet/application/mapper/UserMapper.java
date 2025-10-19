@@ -7,10 +7,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-/**
- * Convierte entidades User a DTOs UserResponse.
- * Utilizado en el bloque de administración (/admin/users).
- */
+
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
@@ -21,9 +18,6 @@ public interface UserMapper {
     @Mapping(target = "createdAt", source = "createdAt")
     UserResponse toResponse(User user);
 
-    /**
-     * Convierte una lista de entidades User a una lista de DTOs UserResponse.
-     * Útil para listados en la vista de administración.
-     */
+
     List<UserResponse> toResponseList(List<User> users);
 }

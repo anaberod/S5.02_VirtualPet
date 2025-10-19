@@ -18,13 +18,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update        # solo en desarrollo
-    open-in-view: false       # buena práctica en APIs
+      ddl-auto: update
+    open-in-view: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-        # format_sql: true     # (opcional) ver SQL bonito en logs
+
 
 jwt:
-  secret: ${JWT_SECRET}        # define JWT_SECRET como variable de entorno
+  secret: ${JWT_SECRET}
   expirationMinutes: 120

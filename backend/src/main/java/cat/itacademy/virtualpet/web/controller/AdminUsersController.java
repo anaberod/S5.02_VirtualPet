@@ -14,10 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Controller para la administración de usuarios (solo ROLE_ADMIN).
- * Permite listar usuarios, ver detalles, listar mascotas y eliminar usuarios o mascotas.
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/admin/users")

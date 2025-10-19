@@ -7,15 +7,15 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update      # crea/actualiza las tablas si no existen
+      ddl-auto: update
     open-in-view: false
 
   main:
     allow-bean-definition-overriding: true
 
-# --- JWT configuración de test ---
+
 jwt:
-  # 🔒 32 bytes en Base64 (256 bits). Válido para HS256.
+
   secret: MDEyMzQ1Njc4OUFCQ0RFRjAxMjM0NTY3ODlBQkNERUYwMTIzNDU2Nzg5QUJDREVG
   issuer: virtualpet-test
   expirationMinutes: 120

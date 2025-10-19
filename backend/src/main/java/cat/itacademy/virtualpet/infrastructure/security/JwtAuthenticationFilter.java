@@ -21,12 +21,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Filtro JWT:
- * - Ignora preflight y rutas públicas mediante shouldNotFilter.
- * - Valida token, carga usuario y establece Authentication si todo es correcto.
- * - Si el usuario no existe o el token no es válido, no autentica (Security devolverá 401/403).
- */
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -37,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final AntPathMatcher PM = new AntPathMatcher();
 
-    // Rutas públicas (ajústalas si necesitas más)
+
     private static final String[] PUBLIC_PATTERNS = new String[] {
             "/auth/**",
             "/swagger-ui/**",
@@ -63,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String uri = request.getRequestURI();
 
-        // Si ya hay autenticación previa → saltar
+
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             log.debug("JWT FILTER skipped for '{}' → already authenticated", uri);
             filterChain.doFilter(request, response);
@@ -81,7 +76,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.debug("JWT FILTER detected Bearer token ({} chars) for '{}'", token.length(), uri);
 
         try {
-            // 1️⃣ Extraer email (valida firma/exp. internamente)
+
             String email = jwtService.extractEmail(token);
             if (email == null) {
                 log.warn("JWT FILTER invalid token: subject is null for '{}'", uri);
@@ -91,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             email = email.trim().toLowerCase();
             log.trace("JWT FILTER extracted email='{}'", email);
 
-            // 2️⃣ Buscar usuario
+
             User user = userRepository.findByEmail(email).orElse(null);
             if (user == null) {
                 log.warn("JWT FILTER user not found for email='{}'", email);
@@ -99,19 +94,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // 3️⃣ Validar token
+
             if (!jwtService.isTokenValid(token, user)) {
                 log.warn("JWT FILTER invalid token for user='{}'", email);
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // 4️⃣ Construir authorities
+
             Set<SimpleGrantedAuthority> authorities = user.getRoles().stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());
 
-            // 5️⃣ Establecer contexto de seguridad
+
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(email, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
@@ -120,7 +115,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } catch (Exception ex) {
             log.error("JWT FILTER error while processing token for '{}': {}", uri, ex.getMessage());
-            // No autenticar → sigue el flujo normal (Security se encarga)
+
         }
 
         filterChain.doFilter(request, response);

@@ -2,9 +2,6 @@ package cat.itacademy.virtualpet.application.dto.auth;
 
 import lombok.*;
 
-/**
- * Respuesta estándar de autenticación: se devuelve el JWT.
- */
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder

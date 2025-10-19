@@ -102,11 +102,11 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
     }
 
-    // --- NUEVO: Respeta ResponseStatusException (404, 403, etc.) ---
+
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatus(ResponseStatusException ex,
                                                                     HttpServletRequest req) {
-        // Spring 6: getStatusCode() -> HttpStatusCode; convertir a HttpStatus
+
         HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
         String message = ex.getReason() != null ? ex.getReason() : status.getReasonPhrase();
         log.warn("{} {} on {} -> {}", status.value(), status.getReasonPhrase(), req.getRequestURI(), message);

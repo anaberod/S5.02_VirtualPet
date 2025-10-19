@@ -5,10 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-/**
- * Payload de entrada para LOGIN.
- * Importante: aquí solo se acepta email + password (no username).
- */
+
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder

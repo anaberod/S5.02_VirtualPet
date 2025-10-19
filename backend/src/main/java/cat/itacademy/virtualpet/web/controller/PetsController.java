@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * REST controller for managing virtual pets.
- * All endpoints require JWT authentication.
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/pets")

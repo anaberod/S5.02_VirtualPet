@@ -6,9 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
 
-/**
- * Response model for Pet details.
- */
+
 @Schema(description = "Pet information returned in responses.")
 public class PetResponse {
 
@@ -23,11 +21,11 @@ public class PetResponse {
     private Long ownerId;
     private Instant createdAt;
 
-    // 🆕 Estado de vida/muerte
+
     private boolean dead;
     private Instant deathAt;
 
-    // ---------- Getters & Setters ----------
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

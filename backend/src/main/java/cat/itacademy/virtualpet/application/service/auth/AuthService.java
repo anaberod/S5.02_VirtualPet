@@ -26,13 +26,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    /**
-     * Registro:
-     * - normaliza email/username
-     * - valida duplicados → 409 (excepciones propias)
-     * - guarda BCrypt y ROLE_USER
-     * - devuelve JWT en AuthResponse
-     */
+
     public AuthResponse register(RegisterRequest in) {
         final String username = sanitize(in.getUsername());
         final String email = sanitizeEmail(in.getEmail());
@@ -68,12 +62,7 @@ public class AuthService {
                 .build();
     }
 
-    /**
-     * Login por email:
-     * - email inexistente → InvalidEmailException (401)
-     * - password incorrecta → IncorrectPasswordException (401)
-     * - OK → devuelve JWT
-     */
+
     public AuthResponse login(LoginRequest in) {
         final String email = sanitizeEmail(in.getEmail());
         log.info("AUTH → LOGIN attempt email='{}'", email);

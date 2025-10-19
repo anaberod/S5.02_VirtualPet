@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-// IMPORTA TUS ENTIDADES REALES
+
 import cat.itacademy.virtualpet.domain.user.User;
 import cat.itacademy.virtualpet.domain.pet.Pet;
 import cat.itacademy.virtualpet.domain.pet.enums.Breed;

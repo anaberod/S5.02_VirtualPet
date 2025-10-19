@@ -6,9 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/**
- * Request body for creating a new pet.
- */
+
 @Schema(description = "Request data for creating a new pet.")
 public class PetCreateRequest {
 
@@ -21,7 +19,7 @@ public class PetCreateRequest {
     @Schema(description = "Pet breed", example = "LABRADOR", allowableValues = {"DALMATIAN", "LABRADOR", "GOLDEN_RETRIEVER"})
     private Breed breed;
 
-    // Getters and setters
+
     public String getName() {
         return name;
     }
