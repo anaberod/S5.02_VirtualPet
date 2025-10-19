@@ -16,9 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-/**
- * Implementación del servicio de administración de usuarios.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -33,8 +30,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponse> getAllUsers(String adminEmail) {
-        log.info("ADMIN {} requested full user list", adminEmail);
+        log.info("ADMIN {} → LIST USERS", adminEmail);
         List<User> users = userRepository.findAll();
+        log.debug("ADMIN {} → LIST USERS count={}", adminEmail, users.size());
         return userMapper.toResponseList(users);
     }
 
@@ -42,9 +40,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserById(Long id, String adminEmail) {
-        log.info("ADMIN {} requested user {}", adminEmail, id);
+        log.info("ADMIN {} → GET USER {}", adminEmail, id);
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> {
+                    log.warn("GET USER {} → NOT FOUND", id);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+                });
+        log.debug("GET USER {} → username={} email={}", id, user.getUsername(), user.getEmail());
         return userMapper.toResponse(user);
     }
 
@@ -52,11 +54,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<PetResponse> getUserPets(Long userId, String adminEmail) {
-        log.info("ADMIN {} requested pets of user {}", adminEmail, userId);
+        log.info("ADMIN {} → LIST USER PETS userId={}", adminEmail, userId);
         if (!userRepository.existsById(userId)) {
+            log.warn("LIST USER PETS → userId={} NOT FOUND", userId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         List<Pet> pets = petRepository.findAllByOwnerId(userId);
+        log.debug("LIST USER PETS → userId={} count={}", userId, pets.size());
         return pets.stream().map(petMapper::toResponse).toList();
     }
 
@@ -64,35 +68,48 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id, String adminEmail) {
-        log.info("ADMIN {} deleted user {}", adminEmail, id);
+        log.info("ADMIN {} → DELETE USER {}", adminEmail, id);
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> {
+                    log.warn("DELETE USER {} → NOT FOUND", id);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+                });
 
-        // Eliminar mascotas del usuario antes de borrar el usuario
         List<Pet> pets = petRepository.findAllByOwnerId(user.getId());
-        petRepository.deleteAll(pets);
+        int petCount = pets.size();
+        if (petCount > 0) {
+            log.debug("DELETE USER {} → deleting {} pets first", id, petCount);
+            petRepository.deleteAll(pets);
+        }
 
-        // Eliminar usuario
         userRepository.delete(user);
+        log.info("ADMIN {} → DELETED USER {} (and {} pets)", adminEmail, id, petCount);
     }
 
     // =================== ELIMINAR UNA MASCOTA CONCRETA DE UN USUARIO ===================
 
     @Override
     public void deleteUserPet(Long userId, Long petId, String adminEmail) {
-        log.info("ADMIN {} requested deletion of pet {} from user {}", adminEmail, petId, userId);
+        log.info("ADMIN {} → DELETE PET {} of USER {}", adminEmail, petId, userId);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> {
+                    log.warn("DELETE PET {} → USER {} NOT FOUND", petId, userId);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+                });
 
         Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet not found"));
+                .orElseThrow(() -> {
+                    log.warn("DELETE PET {} → NOT FOUND", petId);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet not found");
+                });
 
         if (!pet.getOwner().getId().equals(user.getId())) {
+            log.warn("DELETE PET {} → belongsToUser={} but requestedUser={}", petId, pet.getOwner().getId(), userId);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Pet does not belong to this user");
         }
 
         petRepository.delete(pet);
-        log.info("ADMIN {} deleted pet {} of user {}", adminEmail, petId, userId);
+        log.info("ADMIN {} → DELETED PET {} of USER {}", adminEmail, petId, userId);
     }
 }

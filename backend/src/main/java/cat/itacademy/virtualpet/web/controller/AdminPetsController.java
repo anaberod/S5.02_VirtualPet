@@ -33,16 +33,7 @@ public class AdminPetsController {
     }
 
     // ===================== LIST ALL (PAGINATED + FILTER) =====================
-
-    @Operation(
-            summary = "List all pets (ADMIN only, paginated)",
-            description = """
-                    Paginated list of all pets. Optional filter by ownerId.
-                    Example:
-                    - /admin/pets?page=0&size=5&sort=createdAt,desc
-                    - /admin/pets?ownerId=2&page=0&size=10
-                    """
-    )
+    @Operation(summary = "List all pets (ADMIN only, paginated)")
     @GetMapping
     public ResponseEntity<Page<PetResponse>> listAllPets(
             Authentication authentication,
@@ -51,16 +42,21 @@ public class AdminPetsController {
             @ParameterObject Pageable pageable
     ) {
         String adminEmail = authentication.getName();
-        log.info("ADMIN {} LIST pets ownerId={} page={} size={} sort={}",
-                adminEmail, ownerId,
+        log.info("ADMIN {} requested PET LIST (ownerId={})", adminEmail, ownerId);
+        log.debug("Pagination params | page={} size={} sort={}",
                 pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 
-        Page<PetResponse> pets = petService.adminListPets(ownerId, pageable, adminEmail);
-        return ResponseEntity.ok(pets);
+        try {
+            Page<PetResponse> pets = petService.adminListPets(ownerId, pageable, adminEmail);
+            log.info("ADMIN {} successfully retrieved {} pets", adminEmail, pets.getTotalElements());
+            return ResponseEntity.ok(pets);
+        } catch (Exception ex) {
+            log.warn("ADMIN {} failed to list pets | reason={}", adminEmail, ex.getMessage());
+            throw ex;
+        }
     }
 
     // ===================== GET BY ID =====================
-
     @Operation(summary = "Get a pet by ID (ADMIN override)")
     @GetMapping("/{id}")
     public ResponseEntity<PetResponse> getPetById(
@@ -68,14 +64,19 @@ public class AdminPetsController {
             Authentication authentication
     ) {
         String adminEmail = authentication.getName();
-        log.info("ADMIN {} GET pet {}", adminEmail, id);
+        log.info("ADMIN {} requested PET {}", adminEmail, id);
 
-        PetResponse pet = petService.getPetById(id, adminEmail);
-        return ResponseEntity.ok(pet);
+        try {
+            PetResponse pet = petService.getPetById(id, adminEmail);
+            log.info("ADMIN {} retrieved PET {} successfully", adminEmail, id);
+            return ResponseEntity.ok(pet);
+        } catch (Exception ex) {
+            log.warn("ADMIN {} failed to get PET {} | reason={}", adminEmail, id, ex.getMessage());
+            throw ex;
+        }
     }
 
     // ===================== DELETE PET =====================
-
     @Operation(summary = "Delete a pet (ADMIN override)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePet(
@@ -83,14 +84,19 @@ public class AdminPetsController {
             Authentication authentication
     ) {
         String adminEmail = authentication.getName();
-        log.info("ADMIN {} DELETE pet {}", adminEmail, id);
+        log.info("ADMIN {} attempting to DELETE PET {}", adminEmail, id);
 
-        petService.deletePet(id, adminEmail);
-        return ResponseEntity.noContent().build();
+        try {
+            petService.deletePet(id, adminEmail);
+            log.info("ADMIN {} successfully deleted PET {}", adminEmail, id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception ex) {
+            log.warn("ADMIN {} failed to delete PET {} | reason={}", adminEmail, id, ex.getMessage());
+            throw ex;
+        }
     }
 
     // ===================== ACTIONS =====================
-
     @Operation(summary = "Feed a pet (ADMIN override)")
     @PostMapping("/{id}/actions/feed")
     public ResponseEntity<PetActionResponse> feedPet(
@@ -98,10 +104,16 @@ public class AdminPetsController {
             Authentication authentication
     ) {
         String adminEmail = authentication.getName();
-        log.info("ADMIN {} FEED pet {}", adminEmail, id);
+        log.info("ADMIN {} FEED PET {}", adminEmail, id);
 
-        PetActionResponse response = petService.feed(id, adminEmail);
-        return ResponseEntity.ok(response);
+        try {
+            PetActionResponse response = petService.feed(id, adminEmail);
+            log.info("ADMIN {} successfully FED PET {}", adminEmail, id);
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            log.warn("ADMIN {} failed to FEED PET {} | reason={}", adminEmail, id, ex.getMessage());
+            throw ex;
+        }
     }
 
     @Operation(summary = "Wash a pet (ADMIN override)")
@@ -111,10 +123,16 @@ public class AdminPetsController {
             Authentication authentication
     ) {
         String adminEmail = authentication.getName();
-        log.info("ADMIN {} WASH pet {}", adminEmail, id);
+        log.info("ADMIN {} WASH PET {}", adminEmail, id);
 
-        PetActionResponse response = petService.wash(id, adminEmail);
-        return ResponseEntity.ok(response);
+        try {
+            PetActionResponse response = petService.wash(id, adminEmail);
+            log.info("ADMIN {} successfully WASHED PET {}", adminEmail, id);
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            log.warn("ADMIN {} failed to WASH PET {} | reason={}", adminEmail, id, ex.getMessage());
+            throw ex;
+        }
     }
 
     @Operation(summary = "Play with a pet (ADMIN override)")
@@ -124,9 +142,15 @@ public class AdminPetsController {
             Authentication authentication
     ) {
         String adminEmail = authentication.getName();
-        log.info("ADMIN {} PLAY pet {}", adminEmail, id);
+        log.info("ADMIN {} PLAY PET {}", adminEmail, id);
 
-        PetActionResponse response = petService.play(id, adminEmail);
-        return ResponseEntity.ok(response);
+        try {
+            PetActionResponse response = petService.play(id, adminEmail);
+            log.info("ADMIN {} successfully PLAYED with PET {}", adminEmail, id);
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            log.warn("ADMIN {} failed to PLAY PET {} | reason={}", adminEmail, id, ex.getMessage());
+            throw ex;
+        }
     }
 }

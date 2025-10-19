@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
  * - Valida token, carga usuario y establece Authentication si todo es correcto.
  * - Si el usuario no existe o el token no es válido, no autentica (Security devolverá 401/403).
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -59,56 +61,66 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        // Si ya hay autenticación, continúa
+        String uri = request.getRequestURI();
+
+        // Si ya hay autenticación previa → saltar
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            log.debug("JWT FILTER skipped for '{}' → already authenticated", uri);
             filterChain.doFilter(request, response);
             return;
         }
 
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.trace("JWT FILTER no Authorization header found for '{}'", uri);
             filterChain.doFilter(request, response);
             return;
         }
 
         final String token = authHeader.substring(7);
+        log.debug("JWT FILTER detected Bearer token ({} chars) for '{}'", token.length(), uri);
 
         try {
-            // 1) Extraer email (valida firma/exp. internamente; si falla, lanza excepción)
+            // 1️⃣ Extraer email (valida firma/exp. internamente)
             String email = jwtService.extractEmail(token);
             if (email == null) {
+                log.warn("JWT FILTER invalid token: subject is null for '{}'", uri);
                 filterChain.doFilter(request, response);
                 return;
             }
             email = email.trim().toLowerCase();
+            log.trace("JWT FILTER extracted email='{}'", email);
 
-            // 2) Cargar usuario
+            // 2️⃣ Buscar usuario
             User user = userRepository.findByEmail(email).orElse(null);
             if (user == null) {
-                // Usuario borrado o inexistente → no autenticar
+                log.warn("JWT FILTER user not found for email='{}'", email);
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // 3) Validar token contra el usuario
+            // 3️⃣ Validar token
             if (!jwtService.isTokenValid(token, user)) {
+                log.warn("JWT FILTER invalid token for user='{}'", email);
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // 4) Construir Authorities con prefijo ROLE_
+            // 4️⃣ Construir authorities
             Set<SimpleGrantedAuthority> authorities = user.getRoles().stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());
 
-            // 5) Establecer Authentication (principal = email)
+            // 5️⃣ Establecer contexto de seguridad
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(email, null, authorities);
-
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-        } catch (Exception ignored) {
-            // Cualquier fallo → no autenticar; Security decidirá (401/403)
+            log.debug("JWT FILTER authenticated user='{}' with roles={}", email, authorities);
+
+        } catch (Exception ex) {
+            log.error("JWT FILTER error while processing token for '{}': {}", uri, ex.getMessage());
+            // No autenticar → sigue el flujo normal (Security se encarga)
         }
 
         filterChain.doFilter(request, response);

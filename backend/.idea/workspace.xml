@@ -5,14 +5,69 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="660d5f19-cb0a-4c8a-9325-5534ae8d0e33" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImplTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/infrastructure/repository/UserRepositoryTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/infrastructure/security/JwtServiceTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/AdminPetsControllerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/AdminUsersControllerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/error/GlobalExceptionHandlerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/mapper/PetMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/logging/CorrelationIdFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/BackendApplicationTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/auth/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/auth/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/user/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/application/service/user/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/infrastructure/security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/infrastructure/security/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/infrastructure/security/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/infrastructure/security/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/controller/AdminPetsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/controller/AdminPetsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/controller/AdminUsersController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/controller/AdminUsersController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/controller/PetsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/controller/PetsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/error/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/web/error/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/SmokeTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/infrastructure/repository/PetRepositoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/infrastructure/repository/PetRepositoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/infrastructure/repository/UserRepositoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/infrastructure/repository/UserRepositoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/support/JwtTestUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/support/TestSecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/support/TestcontainersMySQL.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/AdminPetsControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/AdminPetsControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/AdminUsersControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/AdminUsersControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/AuthControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/AuthControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/PetsControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/controller/PetsControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/error/GlobalExceptionHandlerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/error/GlobalExceptionHandlerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/mapper/PetMapperTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/web/mapper/PetMapperTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/application-test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/application-test.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/auth/AuthService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/auth/AuthService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/user/UserServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/application/service/user/UserServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/infrastructure/security/JwtAuthenticationFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/infrastructure/security/JwtAuthenticationFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/infrastructure/security/JwtService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/infrastructure/security/JwtService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/controller/AdminPetsController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/controller/AdminPetsController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/controller/AdminUsersController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/controller/AdminUsersController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/controller/AuthController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/controller/AuthController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/controller/PetsController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/controller/PetsController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/error/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/web/error/GlobalExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/cat/itacademy/virtualpet/application/mapper/PetMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/cat/itacademy/virtualpet/application/mapper/PetMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/cat/itacademy/virtualpet/application/mapper/UserMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/cat/itacademy/virtualpet/application/mapper/UserMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/application-test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/application-test.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/SmokeTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/infrastructure/repository/PetRepositoryTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/infrastructure/repository/PetRepositoryTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/infrastructure/repository/UserRepositoryTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/infrastructure/repository/UserRepositoryTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/support/JwtTestUtil.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/support/TestSecurityConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/support/TestcontainersMySQL.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/web/controller/AdminPetsControllerStandaloneTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/web/controller/AdminUsersControllerStandaloneTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/web/controller/AuthControllerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/web/controller/AuthControllerTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/web/controller/PetsControllerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/web/controller/PetsControllerTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/web/error/GlobalExceptionHandlerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/web/error/GlobalExceptionHandlerTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/web/mapper/PetMapperTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/web/mapper/PetMapperTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/app/admin/pets/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/admin/pets/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/app/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/lib/stores/users-store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/lib/stores/users-store.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/styles/globals.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,20 +98,24 @@
     "Application.BackendApplication.executor": "Run",
     "JUnit.AdminPetsControllerStandaloneTest.executor": "Run",
     "JUnit.AdminPetsControllerStandaloneTest.listAllPets_ok.executor": "Run",
+    "JUnit.AdminPetsControllerTest.deletePet_ok.executor": "Run",
     "JUnit.AdminPetsControllerTest.executor": "Run",
     "JUnit.AdminUsersControllerStandaloneTest.executor": "Run",
+    "JUnit.AdminUsersControllerTest.executor": "Run",
     "JUnit.AuthControllerTest.executor": "Run",
     "JUnit.AuthControllerTest.register_createsUser.executor": "Run",
+    "JUnit.BackendApplicationTest.executor": "Run",
     "JUnit.GlobalExceptionHandlerTest.executor": "Run",
     "JUnit.JwtServiceTest.executor": "Run",
     "JUnit.PetMapperTest.executor": "Run",
     "JUnit.PetRepositoryTest.executor": "Run",
-    "JUnit.PetServiceImplTest.executor": "Run",
+    "JUnit.PetServiceImplTest.executor": "Coverage",
     "JUnit.PetsControllerTest.actions_shouldRespectRules.executor": "Run",
     "JUnit.PetsControllerTest.executor": "Run",
     "JUnit.SmokeTest.executor": "Run",
     "JUnit.UserRepositoryTest (1).executor": "Run",
     "JUnit.UserRepositoryTest.executor": "Run",
+    "JUnit.virtualpet in backend.executor": "Coverage",
     "Maven.backend [clean].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -84,9 +143,6 @@
   </component>
   <component name="RunManager" selected="Application.BackendApplication">
     <configuration name="BackendApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <envs>
-        <env name="JWT_SECRET" value="MDEyMzQ1Njc4OUFCQ0RFRjAxMjM0NTY3ODlBQkNERUY= " />
-      </envs>
       <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.BackendApplication" />
       <module name="backend" />
       <extension name="coverage">
@@ -99,7 +155,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="AdminUsersControllerStandaloneTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="AdminPetsControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
@@ -108,71 +164,64 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.web.controller" />
-      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.controller.AdminUsersControllerStandaloneTest" />
+      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.controller.AdminPetsControllerTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GlobalExceptionHandlerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="AdminUsersControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="cat.itacademy.virtualpet.web.error.*" />
+          <option name="PATTERN" value="cat.itacademy.virtualpet.web.controller.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.web.error" />
-      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.error.GlobalExceptionHandlerTest" />
+      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.web.controller" />
+      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.controller.AdminUsersControllerTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="UserRepositoryTest (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="BackendApplicationTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="cat.itacademy.virtualpet.infrastructure.repository.*" />
+          <option name="PATTERN" value="cat.itacademy.virtualpet.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.infrastructure.repository" />
-      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.infrastructure.repository.UserRepositoryTest" />
+      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet" />
+      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.BackendApplicationTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="UserRepositoryTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="virtualpet in backend" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="cat.itacademy.virtualpet.domain.user.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.domain.user" />
-      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.domain.user.UserRepositoryTest" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list>
       <item itemvalue="Application.BackendApplication" />
-      <item itemvalue="JUnit.AdminUsersControllerStandaloneTest" />
-      <item itemvalue="JUnit.GlobalExceptionHandlerTest" />
-      <item itemvalue="JUnit.UserRepositoryTest" />
-      <item itemvalue="JUnit.UserRepositoryTest (1)" />
+      <item itemvalue="JUnit.AdminPetsControllerTest" />
+      <item itemvalue="JUnit.AdminUsersControllerTest" />
+      <item itemvalue="JUnit.BackendApplicationTest" />
+      <item itemvalue="JUnit.virtualpet in backend" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.BackendApplication" />
-        <item itemvalue="JUnit.GlobalExceptionHandlerTest" />
-        <item itemvalue="JUnit.UserRepositoryTest (1)" />
-        <item itemvalue="JUnit.UserRepositoryTest" />
-        <item itemvalue="JUnit.AdminUsersControllerStandaloneTest" />
+        <item itemvalue="JUnit.virtualpet in backend" />
+        <item itemvalue="JUnit.BackendApplicationTest" />
+        <item itemvalue="JUnit.AdminPetsControllerTest" />
+        <item itemvalue="JUnit.AdminUsersControllerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -186,5 +235,11 @@
       <updated>1759308137125</updated>
     </task>
     <servers />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/backend$virtualpet_in_backend.ic" NAME="virtualpet in backend Coverage Results" MODIFIED="1760880500628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/backend$PetServiceImplTest.ic" NAME="PetServiceImplTest Coverage Results" MODIFIED="1760603323429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>cat.itacademy.virtualpet.application.service.pet.*</FILTER>
+    </SUITE>
   </component>
 </project>

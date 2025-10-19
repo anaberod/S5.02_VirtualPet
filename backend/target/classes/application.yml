@@ -16,8 +16,6 @@ spring:
       include-binding-errors: always
       include-stacktrace: never
 
-
-
   jpa:
     hibernate:
       ddl-auto: update        # solo en desarrollo

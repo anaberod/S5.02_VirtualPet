@@ -2,7 +2,6 @@ package cat.itacademy.virtualpet.infrastructure.repository;
 
 import cat.itacademy.virtualpet.domain.pet.PetRepository;
 import cat.itacademy.virtualpet.domain.user.UserRepository;
-import cat.itacademy.virtualpet.support.TestcontainersMySQL;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class PetRepositoryTest extends TestcontainersMySQL {
+class PetRepositoryTest {
 
     @Autowired
     UserRepository userRepository;

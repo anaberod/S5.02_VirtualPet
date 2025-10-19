@@ -7,9 +7,10 @@ import org.mockito.Mockito;
 import org.springframework.core.MethodParameter;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
 import java.util.Map;
@@ -30,19 +31,16 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("@Valid -> 400 con lista de errores")
     void handleValidation_returns400_withErrors() throws Exception {
-        // given: un BindingResult con un par de errores
         var target = new Object();
         var br = new BeanPropertyBindingResult(target, "userDto");
         br.addError(new FieldError("userDto", "email", "must be a well-formed email address"));
         br.addError(new FieldError("userDto", "password", "size must be between 8 and 64"));
 
-        var param = Mockito.mock(MethodParameter.class); // no lo usamos, pero el ctor lo pide
+        var param = Mockito.mock(MethodParameter.class);
         var ex = new MethodArgumentNotValidException(param, br);
 
-        // when
         var response = handler.handleValidation(ex, mockReq("/auth/register"));
 
-        // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         Map<String, Object> body = response.getBody();
         assertThat(body).isNotNull();
@@ -50,6 +48,7 @@ class GlobalExceptionHandlerTest {
         assertThat(body.get("error")).isEqualTo("Bad Request");
         assertThat(body.get("message")).isEqualTo("Validation failed");
         assertThat(body.get("path")).isEqualTo("/auth/register");
+        assertThat((String) body.get("timestamp")).contains("T");
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> errors = (List<Map<String, Object>>) body.get("errors");
@@ -61,43 +60,47 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("InvalidEmailException -> 401 Unauthorized (mensaje por defecto)")
     void invalidEmail_returns401() {
-        var ex = new InvalidEmailException(); // <-- sin mensaje custom
+        var ex = new InvalidEmailException();
         var response = handler.invalidEmail(ex, mockReq("/auth/login"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         Map<String, Object> body = response.getBody();
         assertThat(body.get("message")).isEqualTo("Invalid email");
+        assertThat(body.get("status")).isEqualTo(401);
         assertThat(body.get("path")).isEqualTo("/auth/login");
     }
 
     @Test
     @DisplayName("IncorrectPasswordException -> 401 Unauthorized (mensaje por defecto)")
     void incorrectPassword_returns401() {
-        var ex = new IncorrectPasswordException(); // <-- sin mensaje custom
+        var ex = new IncorrectPasswordException();
         var response = handler.incorrectPassword(ex, mockReq("/auth/login"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody().get("message")).isEqualTo("Incorrect password");
+        assertThat(response.getBody().get("status")).isEqualTo(401);
     }
 
     @Test
     @DisplayName("EmailAlreadyRegisteredException -> 409 Conflict (mensaje por defecto)")
     void emailAlreadyRegistered_returns409() {
-        var ex = new EmailAlreadyRegisteredException(); // <-- sin argumento
+        var ex = new EmailAlreadyRegisteredException();
         var response = handler.emailAlreadyRegistered(ex, mockReq("/auth/register"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody().get("message")).isEqualTo("Email already registered");
+        assertThat(response.getBody().get("status")).isEqualTo(409);
     }
 
     @Test
     @DisplayName("UsernameAlreadyTakenException -> 409 Conflict (mensaje por defecto)")
     void usernameTaken_returns409() {
-        // Asumimos que tu excepción por defecto dice exactamente "Username already taken"
-        var ex = new UsernameAlreadyTakenException(); // <-- sin argumento
+        var ex = new UsernameAlreadyTakenException();
         var response = handler.usernameTaken(ex, mockReq("/auth/register"));
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody().get("message")).isEqualTo("Username already taken");
+        assertThat(response.getBody().get("status")).isEqualTo(409);
     }
 
     @Test
@@ -114,6 +117,17 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("DataIntegrityViolation sin 'email' -> 409 con mensaje genérico")
+    void dataIntegrity_withoutEmail_returns409_genericMessage() {
+        var ex = new DataIntegrityViolationException("some constraint failed", new RuntimeException("unique idx on username"));
+        var response = handler.dataIntegrity(ex, mockReq("/auth/register"));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getBody().get("message")).isEqualTo("Data integrity violation");
+        assertThat(response.getBody().get("status")).isEqualTo(409);
+    }
+
+    @Test
     @DisplayName("PetDeceasedException -> 410 Gone (mensaje tal cual)")
     void petDeceased_returns410() {
         var ex = new PetDeceasedException("Your pet is deceased");
@@ -121,12 +135,13 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.GONE);
         assertThat(response.getBody().get("message")).isEqualTo("Your pet is deceased");
+        assertThat(response.getBody().get("status")).isEqualTo(410);
     }
 
     @Test
-    @DisplayName("PetNotHungryException -> 409 Conflict (mensaje con emoji por defecto)")
+    @DisplayName("PetNotHungryException -> 409 Conflict (mensaje por defecto)")
     void petNotHungry_returns409() {
-        var ex = new PetNotHungryException(); // <-- mensaje con emojis
+        var ex = new PetNotHungryException();
         var response = handler.petNotHungry(ex, mockReq("/pets/5/actions/feed"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
@@ -135,9 +150,9 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("PetAlreadyCleanException -> 409 Conflict (mensaje con emoji por defecto)")
+    @DisplayName("PetAlreadyCleanException -> 409 Conflict (mensaje por defecto)")
     void petAlreadyClean_returns409() {
-        var ex = new PetAlreadyCleanException(); // <-- mensaje con emojis
+        var ex = new PetAlreadyCleanException();
         var response = handler.petAlreadyClean(ex, mockReq("/pets/5/actions/wash"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
@@ -146,14 +161,26 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("PetTooHappyException -> 409 Conflict (mensaje con emoji por defecto)")
+    @DisplayName("PetTooHappyException -> 409 Conflict (mensaje por defecto)")
     void petTooHappy_returns409() {
-        var ex = new PetTooHappyException(); // <-- mensaje con emojis
+        var ex = new PetTooHappyException();
         var response = handler.petTooHappy(ex, mockReq("/pets/5/actions/play"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody().get("message"))
                 .isEqualTo("Your pet is already too happy and tired to play 🎾💤");
+    }
+
+    @Test
+    @DisplayName("ResponseStatusException (404) -> respeta el status y mensaje")
+    void responseStatusException_respectsStatusAndMessage() {
+        var ex = new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet not found");
+        var response = handler.handleResponseStatus(ex, mockReq("/admin/pets/123"));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody().get("message")).isEqualTo("Pet not found");
+        assertThat(response.getBody().get("status")).isEqualTo(404);
+        assertThat(response.getBody().get("path")).isEqualTo("/admin/pets/123");
     }
 
     @Test
@@ -163,5 +190,6 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getBody().get("message")).isEqualTo("Internal Server Error");
         assertThat(response.getBody().get("path")).isEqualTo("/whatever");
+        assertThat(response.getBody().get("status")).isEqualTo(500);
     }
 }

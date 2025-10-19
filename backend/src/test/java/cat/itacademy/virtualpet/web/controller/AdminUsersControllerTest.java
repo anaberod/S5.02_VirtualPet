@@ -1,168 +1,172 @@
 package cat.itacademy.virtualpet.web.controller;
 
-import cat.itacademy.virtualpet.application.dto.pet.PetResponse;
-import cat.itacademy.virtualpet.application.dto.user.UserResponse;
-import cat.itacademy.virtualpet.application.service.user.UserService;
+import cat.itacademy.virtualpet.domain.pet.Pet;
+import cat.itacademy.virtualpet.domain.pet.PetRepository;
+import cat.itacademy.virtualpet.domain.pet.enums.Breed;
+import cat.itacademy.virtualpet.domain.pet.enums.LifeStage;
+import cat.itacademy.virtualpet.domain.user.User;
+import cat.itacademy.virtualpet.domain.user.UserRepository;
+import cat.itacademy.virtualpet.infrastructure.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver; // por si tuvieras pageable en el futuro
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Tests standalone de AdminUsersController.
- * No levanta Spring context. Inyecta Authentication con .principal(...).
+ * 🔧 Integration test for AdminUsersController.
+ * Ejecuta contexto real: Security + JWT + BD (perfil test).
  */
-class AdminUsersControllerStandaloneTest {
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+class AdminUsersControllerTest {
 
-    private static final String ADMIN_EMAIL = "admin@example.com";
+    @Autowired private MockMvc mockMvc;
+    @Autowired private JwtService jwtService;
+    @Autowired private UserRepository userRepository;
+    @Autowired private PetRepository petRepository;
 
-    private UserService userService;
-    private MockMvc mockMvc;
-
-    private Authentication adminAuth() {
-        return new UsernamePasswordAuthenticationToken(
-                ADMIN_EMAIL,
-                "N/A",
-                List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
-    }
+    private String adminToken;
+    private User admin;
+    private User user;
+    private Pet userPet;
 
     @BeforeEach
     void setup() {
-        userService = mock(UserService.class);
-        AdminUsersController controller = new AdminUsersController(userService);
+        // Estado limpio
+        petRepository.deleteAll();
+        userRepository.deleteAll();
 
-        // Si en algún endpoint usas Pageable en el futuro, este resolver evita errores de argumentos.
-        PageableHandlerMethodArgumentResolver pageableResolver =
-                new PageableHandlerMethodArgumentResolver();
+        // --- Admin con ROLE_ADMIN ---
+        admin = new User();
+        admin.setUsername("admin");
+        admin.setEmail("admin@example.com");
+        admin.setPasswordHash("secret");
+        admin.setRoles(Set.of("ROLE_ADMIN"));
+        admin = userRepository.save(admin);
 
-        this.mockMvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .setCustomArgumentResolvers(pageableResolver)
-                .build();
+        // --- Usuario normal ---
+        user = new User();
+        user.setUsername("alice");
+        user.setEmail("alice@example.com");
+        user.setPasswordHash("pwd");
+        user.setRoles(Set.of("ROLE_USER"));
+        user = userRepository.save(user);
+
+        // --- Mascota del usuario (campos NOT NULL rellenos) ---
+        userPet = new Pet();
+        userPet.setName("Kira");
+        userPet.setBreed(Breed.LABRADOR);      // NOT NULL
+        userPet.setLifeStage(LifeStage.BABY);  // NOT NULL
+        userPet.setActionCount(0);             // NOT NULL
+        userPet.setDead(false);                // NOT NULL
+        userPet.setHunger(30);
+        userPet.setHygiene(90);
+        userPet.setFun(70);
+        userPet.setOwner(user);
+        userPet = petRepository.save(userPet);
+
+        // --- JWT del admin ---
+        adminToken = "Bearer " + jwtService.generateToken(admin);
     }
 
-    // ============ GET /admin/users (200) ============
+    // ================= LIST USERS =================
+
     @Test
-    @DisplayName("GET /admin/users -> 200 y devuelve lista")
+    @DisplayName("GET /admin/users → 200 y lista de usuarios")
     void getAllUsers_ok() throws Exception {
-        List<UserResponse> users = List.of(user(1L, "alice@pets.com"), user(2L, "bob@pets.com"));
-        given(userService.getAllUsers(ADMIN_EMAIL)).willReturn(users);
-
-        mockMvc.perform(get("/admin/users").principal(adminAuth()))
+        mockMvc.perform(
+                        get("/admin/users")
+                                .header("Authorization", adminToken)
+                )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$[0].id").exists())
+                .andExpect(jsonPath("$[1].id").exists());
     }
 
-    // ============ GET /admin/users/{id} (200) ============
+    // ================= GET USER BY ID =================
+
     @Test
-    @DisplayName("GET /admin/users/7 -> 200 con user")
+    @DisplayName("GET /admin/users/{id} → 200 con el usuario")
     void getUserById_ok() throws Exception {
-        given(userService.getUserById(7L, ADMIN_EMAIL)).willReturn(user(7L, "seven@pets.com"));
-
-        mockMvc.perform(get("/admin/users/7").principal(adminAuth()))
+        mockMvc.perform(
+                        get("/admin/users/{id}", user.getId())
+                                .header("Authorization", adminToken)
+                )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(7));
+                .andExpect(jsonPath("$.id").value(user.getId()))
+                .andExpect(jsonPath("$.email").value("alice@example.com"));
     }
 
-    // ============ GET /admin/users/{id} (404) ============
     @Test
-    @DisplayName("GET /admin/users/999 -> 404 si no existe")
+    @DisplayName("GET /admin/users/{id} → 404 si no existe")
     void getUserById_notFound() throws Exception {
-        given(userService.getUserById(999L, ADMIN_EMAIL))
-                .willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        mockMvc.perform(get("/admin/users/999").principal(adminAuth()))
+        mockMvc.perform(
+                        get("/admin/users/{id}", Long.MAX_VALUE)
+                                .header("Authorization", adminToken)
+                )
                 .andExpect(status().isNotFound());
     }
 
-    // ============ GET /admin/users/{id}/pets (200) ============
+    // ================= GET USER PETS =================
+
     @Test
-    @DisplayName("GET /admin/users/5/pets -> 200 y devuelve lista de mascotas")
+    @DisplayName("GET /admin/users/{id}/pets → 200 con mascotas del usuario")
     void getUserPets_ok() throws Exception {
-        List<PetResponse> pets = List.of(pet(10L), pet(11L));
-        given(userService.getUserPets(5L, ADMIN_EMAIL)).willReturn(pets);
-
-        mockMvc.perform(get("/admin/users/5/pets").principal(adminAuth()))
+        mockMvc.perform(
+                        get("/admin/users/{id}/pets", user.getId())
+                                .header("Authorization", adminToken)
+                )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$[0].id").value(userPet.getId()))
+                .andExpect(jsonPath("$[0].name").value("Kira"));
     }
 
-    // ============ DELETE /admin/users/{id} (204) ============
-    @Test
-    @DisplayName("DELETE /admin/users/3 -> 204 sin contenido")
-    void deleteUser_noContent() throws Exception {
-        doNothing().when(userService).deleteUser(3L, ADMIN_EMAIL);
+    // ================= DELETE PET OF USER =================
 
-        mockMvc.perform(delete("/admin/users/3").principal(adminAuth()))
-                .andExpect(status().isNoContent());
-    }
-
-    // ============ DELETE /admin/users/{userId}/pets/{petId} (200) ============
     @Test
-    @DisplayName("DELETE /admin/users/4/pets/22 -> 200 con body OK")
+    @DisplayName("DELETE /admin/users/{userId}/pets/{petId} → 200 OK (con body)")
     void deletePetOfUser_ok() throws Exception {
-        doNothing().when(userService).deleteUserPet(4L, 22L, ADMIN_EMAIL);
-
-        mockMvc.perform(delete("/admin/users/4/pets/22").principal(adminAuth()))
+        mockMvc.perform(
+                        delete("/admin/users/{userId}/pets/{petId}", user.getId(), userPet.getId())
+                                .header("Authorization", adminToken)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
-                .andExpect(jsonPath("$.message").value("Pet deleted successfully"))
-                .andExpect(jsonPath("$.petId").value(22));
+                .andExpect(jsonPath("$.petId").value(userPet.getId()));
+
+        // Verifica que ya no existe la mascota
+        assertThat(petRepository.findById(userPet.getId())).isEmpty();
     }
 
-    // --------- helpers ---------
-    private UserResponse user(Long id, String email) {
-        UserResponse u = new UserResponse();
-        // Suponiendo que tu DTO tiene setters para estos campos.
-        // Si tu UserResponse tiene otros nombres, ajústalos aquí.
-        try {
-            // reflect para no depender de la forma exacta; si existen, los usamos
-            UserResponse.class.getMethod("setId", Long.class).invoke(u, id);
-        } catch (Exception ignored) {}
-        try {
-            UserResponse.class.getMethod("setEmail", String.class).invoke(u, email);
-        } catch (Exception ignored) {}
-        try {
-            UserResponse.class.getMethod("setName", String.class).invoke(u, "User-" + id);
-        } catch (Exception ignored) {}
-        return u;
-    }
+    // ================= DELETE USER (and pets) =================
 
-    private PetResponse pet(Long id) {
-        PetResponse p = new PetResponse();
-        p.setId(id);
-        p.setName("Pet-" + id);
-        // Evitamos depender de enums concretos
-        p.setBreed(null);
-        p.setLifeStage(null);
-        p.setHunger(50);
-        p.setHygiene(60);
-        p.setFun(70);
-        p.setActionCount(0);
-        p.setOwnerId(1L);
-        p.setCreatedAt(Instant.now());
-        p.setDead(false);
-        p.setDeathAt(null);
-        return p;
+    @Test
+    @DisplayName("DELETE /admin/users/{id} → 204 y elimina sus mascotas")
+    void deleteUser_ok() throws Exception {
+        mockMvc.perform(
+                        delete("/admin/users/{id}", user.getId())
+                                .header("Authorization", adminToken)
+                                .with(csrf())
+                )
+                .andExpect(status().isNoContent());
+
+        assertThat(userRepository.findById(user.getId())).isEmpty();
+        assertThat(petRepository.findAllByOwnerId(user.getId())).isEmpty();
     }
 }
