@@ -6,13 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="660d5f19-cb0a-4c8a-9325-5534ae8d0e33" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application-local.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application-local.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application-local.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application-local.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/app/admin/pets/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/admin/pets/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/app/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/app/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/lib/stores/users-store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/lib/stores/users-store.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/styles/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImplTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/application-test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/application-test.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/application-test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/application-test.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImplTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImplTest.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +85,7 @@
       <command value="Run Maven Goal" />
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.virtualpet in backend">
+  <component name="RunManager" selected="Application.BackendApplication">
     <configuration name="BackendApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.BackendApplication" />
       <module name="backend" />
@@ -162,8 +161,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.virtualpet in backend" />
         <item itemvalue="Application.BackendApplication" />
+        <item itemvalue="JUnit.virtualpet in backend" />
         <item itemvalue="JUnit.BackendApplicationTest" />
         <item itemvalue="JUnit.AdminPetsControllerTest" />
         <item itemvalue="JUnit.AdminUsersControllerTest" />
@@ -182,7 +181,7 @@
     <servers />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/backend$virtualpet_in_backend.ic" NAME="virtualpet in backend Coverage Results" MODIFIED="1760883800827" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/backend$virtualpet_in_backend.ic" NAME="virtualpet in backend Coverage Results" MODIFIED="1760886395016" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
     <SUITE FILE_PATH="coverage/backend$PetServiceImplTest.ic" NAME="PetServiceImplTest Coverage Results" MODIFIED="1760603323429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>cat.itacademy.virtualpet.application.service.pet.*</FILTER>
     </SUITE>

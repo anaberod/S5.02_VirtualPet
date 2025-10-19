@@ -1,21 +1,19 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/virtualpet?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/virtualpet_test?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: vp_user
     password: vp_pass
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     open-in-view: false
 
   main:
     allow-bean-definition-overriding: true
 
-
 jwt:
-
   secret: MDEyMzQ1Njc4OUFCQ0RFRjAxMjM0NTY3ODlBQkNERUYwMTIzNDU2Nzg5QUJDREVG
   issuer: virtualpet-test
   expirationMinutes: 120
