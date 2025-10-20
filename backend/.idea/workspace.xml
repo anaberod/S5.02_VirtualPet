@@ -6,12 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="660d5f19-cb0a-4c8a-9325-5534ae8d0e33" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/cat/itacademy/virtualpet/application/service/pet/PetServiceImplTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/application-test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/application-test.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cat/itacademy/virtualpet/infrastructure/init/AdminDataLoader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/application-test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/application-test.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImplTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/cat/itacademy/virtualpet/application/service/pet/PetServiceImplTest.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,13 +53,14 @@
     "JUnit.SmokeTest.executor": "Run",
     "JUnit.UserRepositoryTest (1).executor": "Run",
     "JUnit.UserRepositoryTest.executor": "Run",
+    "JUnit.cat.itacademy.virtualpet in backend.executor": "Coverage",
     "JUnit.virtualpet in backend.executor": "Coverage",
     "Maven.backend [clean].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/anabe/IdeaProjects/S04T02N01",
+    "last_opened_file_path": "C:/Users/anabe/IdeaProjects/S5.02_VirtualPet/backend",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.46666667",
@@ -114,21 +109,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="AdminUsersControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="backend" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="cat.itacademy.virtualpet.web.controller.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet.web.controller" />
-      <option name="MAIN_CLASS_NAME" value="cat.itacademy.virtualpet.web.controller.AdminUsersControllerTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="BackendApplicationTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
@@ -144,6 +124,20 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="cat.itacademy.virtualpet in backend" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="backend" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="cat.itacademy.virtualpet.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="cat.itacademy.virtualpet" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="virtualpet in backend" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <option name="TEST_OBJECT" value="directory" />
@@ -155,17 +149,17 @@
     <list>
       <item itemvalue="Application.BackendApplication" />
       <item itemvalue="JUnit.AdminPetsControllerTest" />
-      <item itemvalue="JUnit.AdminUsersControllerTest" />
       <item itemvalue="JUnit.BackendApplicationTest" />
+      <item itemvalue="JUnit.cat.itacademy.virtualpet in backend" />
       <item itemvalue="JUnit.virtualpet in backend" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.BackendApplication" />
+        <item itemvalue="JUnit.cat.itacademy.virtualpet in backend" />
         <item itemvalue="JUnit.virtualpet in backend" />
         <item itemvalue="JUnit.BackendApplicationTest" />
         <item itemvalue="JUnit.AdminPetsControllerTest" />
-        <item itemvalue="JUnit.AdminUsersControllerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -180,8 +174,22 @@
     </task>
     <servers />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/cat/itacademy/virtualpet/BackendApplication.java</url>
+          <line>6</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/backend$virtualpet_in_backend.ic" NAME="virtualpet in backend Coverage Results" MODIFIED="1760886395016" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/backend$virtualpet_in_backend.ic" NAME="virtualpet in backend Coverage Results" MODIFIED="1760889206899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/backend$cat_itacademy_virtualpet_in_backend.ic" NAME="cat.itacademy.virtualpet in backend Coverage Results" MODIFIED="1760889374948" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>cat.itacademy.virtualpet.*</FILTER>
+    </SUITE>
     <SUITE FILE_PATH="coverage/backend$PetServiceImplTest.ic" NAME="PetServiceImplTest Coverage Results" MODIFIED="1760603323429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>cat.itacademy.virtualpet.application.service.pet.*</FILTER>
     </SUITE>
